@@ -1,9 +1,9 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { ArrowDownUp } from "lucide-react"
+import { ArrowUpDown, Search, ArrowLeft } from "lucide-react"
 import { UnitCategory, unitCategories, units, convert } from "@/lib/units"
-import { cn } from "@/lib/utils"
+import Link from "next/link"
 
 export default function UnitConverter() {
   const [category, setCategory] = useState<UnitCategory>('length')
@@ -11,11 +11,14 @@ export default function UnitConverter() {
   const [fromUnit, setFromUnit] = useState<string>(units.length[0].id)
   const [toUnit, setToUnit] = useState<string>(units.length[1].id)
   const [result, setResult] = useState<number>(0)
+  const [fromSearch, setFromSearch] = useState<string>("")
+  const [toSearch, setToSearch] = useState<string>("")
 
-  // Update defaults when category changes
   useEffect(() => {
     setFromUnit(units[category][0].id)
     setToUnit(units[category][1]?.id || units[category][0].id)
+    setFromSearch("")
+    setToSearch("")
   }, [category])
 
   useEffect(() => {
@@ -25,99 +28,174 @@ export default function UnitConverter() {
     }
   }, [amount, fromUnit, toUnit, category])
 
+  const filteredFromUnits = units[category].filter(u => 
+    u.label.toLowerCase().includes(fromSearch.toLowerCase()) ||
+    u.id.toLowerCase().includes(fromSearch.toLowerCase())
+  )
+  
+  const filteredToUnits = units[category].filter(u => 
+    u.label.toLowerCase().includes(toSearch.toLowerCase()) ||
+    u.id.toLowerCase().includes(toSearch.toLowerCase())
+  )
+
+  const swapUnits = () => {
+    const temp = fromUnit
+    setFromUnit(toUnit)
+    setToUnit(temp)
+  }
+
+  const formatResult = (num: number): string => {
+    if (num === 0) return "0"
+    if (Math.abs(num) < 0.000001 || Math.abs(num) > 999999999) {
+      return num.toExponential(6)
+    }
+    return parseFloat(num.toPrecision(10)).toString()
+  }
+
   return (
-    <div className="max-w-md mx-auto space-y-8">
-      
-      {/* Category Selection */}
-      <div className="grid grid-cols-4 gap-2 bg-muted p-1 rounded-lg">
-        {Object.entries(unitCategories).map(([key, label]) => (
-          <button
-            key={key}
-            onClick={() => setCategory(key as UnitCategory)}
-            className={cn(
-              "py-2 px-1 text-xs sm:text-sm font-medium rounded-md transition-all",
-              category === key 
-                ? "bg-background text-foreground shadow-sm" 
-                : "text-muted-foreground hover:bg-background/50"
-            )}
-          >
-            {label}
-          </button>
-        ))}
+    <div className="min-h-screen relative">
+      {/* Background */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="bg-blur-circle w-[400px] h-[400px] bg-violet-600/15 -top-32 -right-32" />
+        <div className="bg-blur-circle w-[300px] h-[300px] bg-cyan-600/15 bottom-0 -left-20" />
       </div>
 
-      <div className="bg-card border rounded-xl p-6 shadow-sm space-y-6">
-        
-        {/* Input */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-muted-foreground">Amount</label>
-          <input
-            type="number"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            className="w-full text-3xl font-bold bg-transparent border-0 border-b-2 border-border focus:border-primary focus:ring-0 px-0 py-2 transition-colors placeholder:text-muted/30"
-            placeholder="0"
-          />
+      <div className="relative z-10 max-w-lg mx-auto px-4 py-8">
+        {/* Header */}
+        <div className="flex items-center gap-4 mb-8">
+          <Link 
+            href="/" 
+            className="p-2 rounded-xl bg-secondary/50 hover:bg-secondary transition-colors"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </Link>
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold">Unit Converter</h1>
+            <p className="text-sm text-muted-foreground">แปลงหน่วย 15+ หมวดหมู่</p>
+          </div>
         </div>
 
-        <div className="grid gap-4 items-center">
+        {/* Category Selection */}
+        <div className="mb-6">
+          <label className="block text-sm font-medium text-muted-foreground mb-2">
+            หมวดหมู่
+          </label>
+          <select
+            value={category}
+            onChange={(e) => setCategory(e.target.value as UnitCategory)}
+            className="select-premium"
+          >
+            {Object.entries(unitCategories).map(([key, label]) => (
+              <option key={key} value={key}>{label}</option>
+            ))}
+          </select>
+        </div>
+
+        {/* Main Card */}
+        <div className="card-premium p-6 space-y-6">
+          {/* Amount Input */}
+          <div>
+            <label className="block text-sm font-medium text-muted-foreground mb-2">
+              จำนวน
+            </label>
+            <input
+              type="number"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              className="input-premium text-2xl md:text-3xl font-bold h-16"
+              placeholder="0"
+            />
+          </div>
+
           {/* From Unit */}
-          <div className="grid gap-1.5">
-            <label className="text-xs font-semibold uppercase text-muted-foreground">From</label>
+          <div>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
+              จาก
+            </label>
+            <div className="relative mb-2">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <input
+                type="text"
+                value={fromSearch}
+                onChange={(e) => setFromSearch(e.target.value)}
+                placeholder="ค้นหาหน่วย..."
+                className="input-premium pl-10 text-sm"
+              />
+            </div>
             <select
               value={fromUnit}
               onChange={(e) => setFromUnit(e.target.value)}
-              className="w-full p-2.5 bg-muted/50 border rounded-lg hover:bg-muted transition-colors"
+              className="select-premium"
+              size={Math.min(filteredFromUnits.length, 5)}
+              style={{ height: 'auto', minHeight: '44px' }}
             >
-              {units[category].map((u) => (
-                <option key={u.id} value={u.id}>
-                  {u.label}
-                </option>
+              {filteredFromUnits.map((u) => (
+                <option key={u.id} value={u.id}>{u.label}</option>
               ))}
             </select>
           </div>
 
-          <div className="flex justify-center -my-2 z-10">
+          {/* Swap Button */}
+          <div className="flex justify-center -my-2">
             <button 
-              onClick={() => {
-                const temp = fromUnit
-                setFromUnit(toUnit)
-                setToUnit(temp)
-              }}
-              className="bg-card border p-2 rounded-full shadow-sm hover:shadow-md transition-all active:scale-95"
+              onClick={swapUnits}
+              className="p-3 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 text-white shadow-lg hover:shadow-xl hover:scale-110 active:scale-95 transition-all"
+              title="สลับหน่วย"
             >
-              <ArrowDownUp className="h-4 w-4 text-muted-foreground" />
+              <ArrowUpDown className="h-5 w-5" />
             </button>
           </div>
 
           {/* To Unit */}
-          <div className="grid gap-1.5">
-            <label className="text-xs font-semibold uppercase text-muted-foreground">To</label>
+          <div>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
+              เป็น
+            </label>
+            <div className="relative mb-2">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <input
+                type="text"
+                value={toSearch}
+                onChange={(e) => setToSearch(e.target.value)}
+                placeholder="ค้นหาหน่วย..."
+                className="input-premium pl-10 text-sm"
+              />
+            </div>
             <select
               value={toUnit}
               onChange={(e) => setToUnit(e.target.value)}
-              className="w-full p-2.5 bg-muted/50 border rounded-lg hover:bg-muted transition-colors"
+              className="select-premium"
+              size={Math.min(filteredToUnits.length, 5)}
+              style={{ height: 'auto', minHeight: '44px' }}
             >
-              {units[category].map((u) => (
-                <option key={u.id} value={u.id}>
-                  {u.label}
-                </option>
+              {filteredToUnits.map((u) => (
+                <option key={u.id} value={u.id}>{u.label}</option>
               ))}
             </select>
           </div>
-        </div>
 
-        {/* Result */}
-        <div className="mt-8 pt-6 border-t">
-          <label className="text-sm font-medium text-muted-foreground">Result</label>
-          <div className="text-4xl font-bold text-primary break-words mt-1">
-             {parseFloat(result.toFixed(6))}
-             <span className="text-lg ml-2 text-muted-foreground font-normal">
-               {units[category].find(u => u.id === toUnit)?.id}
-             </span>
+          {/* Result */}
+          <div className="pt-6 border-t border-border">
+            <label className="block text-sm font-medium text-muted-foreground mb-3">
+              ผลลัพธ์
+            </label>
+            <div className="p-4 rounded-xl bg-gradient-to-br from-violet-500/10 to-purple-600/10 border border-violet-500/20">
+              <div className="text-3xl md:text-4xl font-bold text-gradient break-all">
+                {result === 0 && amount !== "0" && amount !== "" ? "—" : formatResult(result)}
+              </div>
+              <div className="text-sm text-muted-foreground mt-2">
+                {units[category].find(u => u.id === toUnit)?.label}
+              </div>
+            </div>
           </div>
         </div>
 
+        {/* Info */}
+        <div className="mt-6 text-center">
+          <p className="text-xs text-muted-foreground">
+            💡 ใช้ช่องค้นหาเพื่อหาหน่วยที่ต้องการได้เร็วขึ้น
+          </p>
+        </div>
       </div>
     </div>
   )

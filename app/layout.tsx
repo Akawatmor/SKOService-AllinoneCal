@@ -2,22 +2,30 @@ import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import Link from 'next/link'
-import { Calculator } from 'lucide-react'
+import { Calculator, Home } from 'lucide-react'
+import PWAInstall from './components/PWAInstall'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export const viewport: Viewport = {
-  themeColor: '#ffffff',
+  themeColor: '#0f172a',
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
+  maximumScale: 5,
+  userScalable: true,
 }
 
 export const metadata: Metadata = {
-  title: 'UtilsCal - Utility Calculator',
-  description: 'A suite of useful calculators for everyday tasks.',
+  title: 'SKOService - All-in-One Calculator',
+  description: 'Comprehensive calculator suite with unit converter (15+ categories), periodic table, and advanced features. Works offline as PWA.',
   manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'SKOService',
+  },
+  applicationName: 'SKOService Calculator',
+  keywords: ['calculator', 'unit converter', 'periodic table', 'scientific calculator', 'PWA'],
 }
 
 export default function RootLayout({
@@ -26,24 +34,56 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
-        <div className="flex flex-col min-h-screen bg-background text-foreground">
-          <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-            <div className="container flex h-14 items-center">
-              <Link href="/" className="flex items-center gap-2 font-bold px-4">
-                <Calculator className="h-6 w-6" />
-                <span>UtilsCal</span>
+    <html lang="th" className="dark">
+      <head>
+        <link rel="icon" href="/icon-192.png" />
+        <link rel="apple-touch-icon" href="/icon-192.png" />
+      </head>
+      <body className={`${inter.className} antialiased`}>
+        <div className="flex flex-col min-h-screen">
+          {/* Header */}
+          <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl">
+            <div className="max-w-6xl mx-auto flex h-16 items-center justify-between px-4">
+              <Link href="/" className="flex items-center gap-3 group">
+                <div className="icon-container group-hover:scale-105 transition-transform">
+                  <Calculator className="h-5 w-5 text-white" />
+                </div>
+                <span className="font-bold text-lg hidden sm:block">
+                  <span className="text-gradient">SKOService</span>
+                </span>
               </Link>
+              
+              <nav className="flex items-center gap-1">
+                <Link 
+                  href="/" 
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-all"
+                >
+                  <Home className="h-4 w-4" />
+                  <span className="hidden sm:inline">หน้าหลัก</span>
+                </Link>
+              </nav>
             </div>
           </header>
-          <main className="flex-1 container py-6 px-4 md:px-6">
+          
+          {/* Main Content */}
+          <main className="flex-1">
             {children}
           </main>
-          <footer className="border-t py-4 text-center text-sm text-muted-foreground">
-            <p>© {new Date().getFullYear()} UtilsCal. Powered by Next.js & Bun.</p>
+          
+          {/* Footer */}
+          <footer className="border-t border-border/40 py-8 mt-auto">
+            <div className="max-w-6xl mx-auto px-4 text-center">
+              <p className="text-sm text-muted-foreground">
+                © {new Date().getFullYear()} <span className="text-gradient font-semibold">SKOService</span>
+              </p>
+              <p className="text-xs text-muted-foreground/60 mt-1">
+                Built with Next.js • Works Offline
+              </p>
+            </div>
           </footer>
         </div>
+        
+        <PWAInstall />
       </body>
     </html>
   )
