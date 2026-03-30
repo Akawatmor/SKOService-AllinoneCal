@@ -1,18 +1,22 @@
 import PeriodicTable from "./periodic-table"
+import { Atom } from "lucide-react"
+import PageHeader from "../components/PageHeader"
 
 export const metadata = {
-  title: 'Periodic Table - UtilsCal',
+  title: 'Periodic Table - SKOService',
   description: 'Interactive periodic table with element details and molar mass calculator',
 }
 
 export default function PeriodicTablePage() {
   return (
-    <main className="min-h-screen p-4 sm:p-6">
-      <div className="mb-8 text-center">
-        <h1 className="text-3xl sm:text-4xl font-bold mb-2">Periodic Table</h1>
-        <p className="text-muted-foreground">Explore elements and calculate molar masses</p>
-      </div>
+    <div className="page-container space-y-6">
+      <PageHeader
+        title="Periodic Table"
+        description="Explore elements and calculate molar masses"
+        icon={Atom}
+        color="emerald"
+      />
       <PeriodicTable />
-    </main>
+    </div>
   )
 }

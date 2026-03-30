@@ -74,20 +74,20 @@ export default function PWAInstall() {
   if (showInstallPrompt && deferredPrompt) {
     return (
       <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-6 md:bottom-6 md:max-w-sm z-50 animate-slide-up">
-        <div className="card-premium p-5 border-2 border-primary/30">
+        <div className="section-card border-violet-500/30 bg-slate-900/95 backdrop-blur-xl p-5">
           <div className="flex items-start gap-4">
-            <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center shadow-lg">
+            <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br from-violet-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-violet-500/25">
               <Download className="h-6 w-6 text-white" />
             </div>
             
             <div className="flex-1 min-w-0">
-              <h3 className="font-bold text-base mb-1">ติดตั้ง SKOService</h3>
-              <p className="text-sm text-muted-foreground mb-4">
+              <h3 className="font-bold text-base text-white mb-1">ติดตั้ง SKOService</h3>
+              <p className="text-sm text-slate-400 mb-4">
                 ติดตั้งแอพเพื่อใช้งานออฟไลน์และเข้าถึงได้เร็วขึ้น
               </p>
               
               <div className="flex gap-3">
-                <button onClick={handleInstallClick} className="btn-glow text-sm py-2 px-4">
+                <button onClick={handleInstallClick} className="btn-gradient text-sm py-2 px-4">
                   ติดตั้ง
                 </button>
                 <button onClick={handleDismiss} className="btn-ghost text-sm py-2 px-4">
@@ -98,10 +98,10 @@ export default function PWAInstall() {
 
             <button
               onClick={handleDismiss}
-              className="flex-shrink-0 p-1.5 rounded-lg hover:bg-secondary/80 transition-colors"
+              className="flex-shrink-0 p-1.5 rounded-lg hover:bg-slate-800/80 transition-colors"
               aria-label="Close"
             >
-              <X className="h-4 w-4 text-muted-foreground" />
+              <X className="h-4 w-4 text-slate-500" />
             </button>
           </div>
         </div>
@@ -113,7 +113,7 @@ export default function PWAInstall() {
     return (
       <button
         onClick={() => setShowInstallPrompt(true)}
-        className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 shadow-lg hover:shadow-xl hover:scale-110 transition-all duration-300 flex items-center justify-center z-40 glow-purple"
+        className="fixed bottom-6 right-6 w-14 h-14 rounded-full bg-gradient-to-br from-violet-500 to-cyan-500 shadow-lg shadow-violet-500/30 hover:shadow-violet-500/50 hover:scale-110 transition-all duration-300 flex items-center justify-center z-40"
         title="ติดตั้งแอพ"
       >
         <Download className="h-6 w-6 text-white" />

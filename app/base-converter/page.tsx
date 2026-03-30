@@ -1,14 +1,14 @@
 'use client'
 
 import { useState } from 'react'
-import Link from 'next/link'
-import { ArrowLeft, ArrowRight, Hash } from 'lucide-react'
+import { Binary, Info } from 'lucide-react'
+import PageHeader from '../components/PageHeader'
 
 const COMMON_BASES = [
-  { base: 2, name: 'Binary', color: 'blue' },
-  { base: 8, name: 'Octal', color: 'purple' },
-  { base: 10, name: 'Decimal', color: 'green' },
-  { base: 16, name: 'Hexadecimal', color: 'orange' },
+  { base: 2, name: 'Binary', color: 'cyan' },
+  { base: 8, name: 'Octal', color: 'violet' },
+  { base: 10, name: 'Decimal', color: 'emerald' },
+  { base: 16, name: 'Hexadecimal', color: 'amber' },
 ]
 
 export default function BaseConverterPage() {
@@ -52,41 +52,33 @@ export default function BaseConverterPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
-      {/* Header */}
-      <div className="flex items-center gap-4">
-        <Link 
-          href="/" 
-          className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back
-        </Link>
-        <div className="flex-1">
-          <h1 className="text-3xl font-bold">Base Converter</h1>
-          <p className="text-muted-foreground mt-1">Convert numbers between different bases (2-36)</p>
-        </div>
-      </div>
+    <div className="page-container space-y-6">
+      <PageHeader
+        title="Base Converter"
+        description="Convert numbers between different bases (2-36)"
+        icon={Binary}
+        color="cyan"
+      />
 
       {/* Input Section */}
-      <div className="bg-card border rounded-xl p-6 space-y-4">
+      <div className="section-card space-y-4">
         <div className="space-y-2">
-          <label className="text-sm font-medium">Input Number</label>
+          <label className="text-sm font-medium text-slate-300">Input Number</label>
           <input
             type="text"
             value={inputValue}
             onChange={(e) => handleInputChange(e.target.value)}
             placeholder={`Enter number in base ${inputBase}`}
-            className="w-full px-4 py-3 border rounded-lg font-mono text-lg uppercase focus:outline-none focus:ring-2 focus:ring-primary/50"
+            className="input-modern font-mono text-lg uppercase"
           />
-          <p className="text-xs text-muted-foreground">
-            Valid characters for base {inputBase}: {getValidChars(inputBase)}
+          <p className="text-xs text-slate-500">
+            Valid characters for base {inputBase}: <span className="text-cyan-400 font-mono">{getValidChars(inputBase)}</span>
           </p>
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-medium">Input Base</label>
-          <div className="flex gap-2">
+          <label className="text-sm font-medium text-slate-300">Input Base</label>
+          <div className="flex flex-wrap gap-2">
             {COMMON_BASES.map(({ base, name }) => (
               <button
                 key={base}
@@ -94,10 +86,10 @@ export default function BaseConverterPage() {
                   setInputBase(base)
                   setInputValue('')
                 }}
-                className={`px-4 py-2 rounded-lg font-medium text-sm transition-colors ${
+                className={`px-4 py-2 rounded-xl font-medium text-sm transition-all ${
                   inputBase === base
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-muted hover:bg-muted/80'
+                    ? 'bg-gradient-to-r from-violet-500 to-cyan-500 text-white shadow-lg'
+                    : 'bg-slate-800/50 text-slate-300 border border-slate-700/60 hover:bg-slate-700/50'
                 }`}
               >
                 {name} ({base})
@@ -105,7 +97,7 @@ export default function BaseConverterPage() {
             ))}
           </div>
           
-          <div className="flex gap-2 items-center">
+          <div className="flex gap-2 items-center mt-3">
             <input
               type="number"
               min="2"
@@ -113,7 +105,7 @@ export default function BaseConverterPage() {
               value={customBase}
               onChange={(e) => setCustomBase(e.target.value)}
               placeholder="Custom (2-36)"
-              className="flex-1 px-3 py-2 border rounded-lg text-sm"
+              className="input-modern flex-1 text-sm"
             />
             <button
               onClick={() => {
@@ -125,17 +117,17 @@ export default function BaseConverterPage() {
                 }
               }}
               disabled={!customBase || parseInt(customBase) < 2 || parseInt(customBase) > 36}
-              className="px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              className="btn-gradient disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Use
             </button>
           </div>
         </div>
 
-        {decimal !== null && (
-          <div className="pt-4 border-t">
-            <div className="text-sm text-muted-foreground mb-1">Decimal Value</div>
-            <div className="text-3xl font-bold font-mono text-green-600">
+        {decimal !== null && inputValue && (
+          <div className="pt-4 border-t border-slate-700/60">
+            <div className="text-sm text-slate-500 mb-1">Decimal Value</div>
+            <div className="text-3xl font-bold font-mono text-emerald-400">
               {decimal.toLocaleString()}
             </div>
           </div>
@@ -143,24 +135,26 @@ export default function BaseConverterPage() {
       </div>
 
       {/* Common Bases Output */}
-      {decimal !== null && (
+      {decimal !== null && inputValue && (
         <div className="space-y-3">
-          <h3 className="font-semibold">Common Bases</h3>
+          <h3 className="font-semibold text-white">Common Bases</h3>
           <div className="grid sm:grid-cols-2 gap-3">
             {COMMON_BASES.map(({ base, name, color }) => (
-              <div key={base} className="bg-card border rounded-xl p-4">
+              <div key={base} className="section-card">
                 <div className="flex items-center justify-between mb-2">
-                  <div className="font-medium text-sm">{name}</div>
-                  <div className="text-xs text-muted-foreground">Base {base}</div>
+                  <div className="font-medium text-sm text-slate-300">{name}</div>
+                  <div className="badge">Base {base}</div>
                 </div>
-                <div className={`font-mono text-xl font-bold text-${color}-600 break-all`}>
+                <div className={`font-mono text-xl font-bold break-all ${
+                  color === 'cyan' ? 'text-cyan-400' :
+                  color === 'violet' ? 'text-violet-400' :
+                  color === 'emerald' ? 'text-emerald-400' : 'text-amber-400'
+                }`}>
                   {convertToBase(base) || '0'}
                 </div>
                 <button
-                  onClick={() => {
-                    navigator.clipboard.writeText(convertToBase(base))
-                  }}
-                  className="mt-2 text-xs text-primary hover:underline"
+                  onClick={() => navigator.clipboard.writeText(convertToBase(base))}
+                  className="mt-2 text-xs text-violet-400 hover:text-violet-300"
                 >
                   Copy
                 </button>
@@ -171,33 +165,33 @@ export default function BaseConverterPage() {
       )}
 
       {/* All Bases Output */}
-      {decimal !== null && (
+      {decimal !== null && inputValue && (
         <div className="space-y-3">
-          <h3 className="font-semibold">All Bases (2-36)</h3>
-          <div className="bg-card border rounded-xl overflow-hidden">
+          <h3 className="font-semibold text-white">All Bases (2-36)</h3>
+          <div className="section-card overflow-hidden p-0">
             <div className="max-h-96 overflow-y-auto">
               <table className="w-full text-sm">
-                <thead className="bg-muted/50 sticky top-0 border-b">
+                <thead className="bg-slate-800/50 sticky top-0 border-b border-slate-700/60">
                   <tr>
-                    <th className="text-left px-4 py-2 font-medium">Base</th>
-                    <th className="text-left px-4 py-2 font-medium">Value</th>
-                    <th className="text-right px-4 py-2 font-medium">Action</th>
+                    <th className="text-left px-4 py-2 font-medium text-slate-400">Base</th>
+                    <th className="text-left px-4 py-2 font-medium text-slate-400">Value</th>
+                    <th className="text-right px-4 py-2 font-medium text-slate-400">Action</th>
                   </tr>
                 </thead>
                 <tbody>
                   {Array.from({ length: 35 }, (_, i) => i + 2).map((base) => (
-                    <tr key={base} className={`border-b last:border-0 ${inputBase === base ? 'bg-primary/5' : ''}`}>
-                      <td className="px-4 py-2 font-medium">
+                    <tr key={base} className={`border-b border-slate-800/50 last:border-0 ${inputBase === base ? 'bg-violet-500/10' : ''}`}>
+                      <td className="px-4 py-2 font-medium text-slate-300">
                         {base}
-                        {inputBase === base && <span className="ml-2 text-xs text-primary">(input)</span>}
+                        {inputBase === base && <span className="ml-2 text-xs text-violet-400">(input)</span>}
                       </td>
-                      <td className="px-4 py-2 font-mono break-all">
+                      <td className="px-4 py-2 font-mono break-all text-slate-300">
                         {convertToBase(base) || '0'}
                       </td>
                       <td className="px-4 py-2 text-right">
                         <button
                           onClick={() => navigator.clipboard.writeText(convertToBase(base))}
-                          className="text-xs text-primary hover:underline"
+                          className="text-xs text-violet-400 hover:text-violet-300"
                         >
                           Copy
                         </button>
@@ -212,15 +206,19 @@ export default function BaseConverterPage() {
       )}
 
       {/* Info */}
-      <div className="bg-muted/30 border rounded-xl p-4 text-sm text-muted-foreground">
-        <h4 className="font-semibold mb-2 text-foreground">💡 About Base Systems</h4>
-        <ul className="space-y-1 list-disc list-inside">
-          <li><strong>Binary (Base 2):</strong> Uses digits 0-1, common in computing</li>
-          <li><strong>Octal (Base 8):</strong> Uses digits 0-7, used in Unix permissions</li>
-          <li><strong>Decimal (Base 10):</strong> Uses digits 0-9, standard number system</li>
-          <li><strong>Hexadecimal (Base 16):</strong> Uses 0-9 and A-F, used in colors and memory addresses</li>
-          <li><strong>Higher Bases (17-36):</strong> Use letters up to Z for additional digits</li>
-        </ul>
+      <div className="section-card border-cyan-500/20 bg-cyan-500/5">
+        <div className="flex gap-3">
+          <Info className="h-5 w-5 text-cyan-400 flex-shrink-0 mt-0.5" />
+          <div className="text-sm">
+            <h4 className="font-semibold mb-2 text-cyan-300">About Base Systems</h4>
+            <ul className="space-y-1 text-slate-400">
+              <li><strong className="text-cyan-400">Binary (Base 2):</strong> Uses digits 0-1, common in computing</li>
+              <li><strong className="text-violet-400">Octal (Base 8):</strong> Uses digits 0-7, used in Unix permissions</li>
+              <li><strong className="text-emerald-400">Decimal (Base 10):</strong> Uses digits 0-9, standard number system</li>
+              <li><strong className="text-amber-400">Hexadecimal (Base 16):</strong> Uses 0-9 and A-F, used in colors and memory addresses</li>
+            </ul>
+          </div>
+        </div>
       </div>
     </div>
   )

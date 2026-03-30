@@ -1,8 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import Link from 'next/link'
-import { ArrowLeft, Calendar, Plus, Minus, Clock } from 'lucide-react'
+import { Calendar, Plus, Minus, Clock } from 'lucide-react'
+import PageHeader from '../components/PageHeader'
 
 type Mode = 'difference' | 'add-subtract'
 
@@ -43,22 +43,21 @@ export default function DateCalculatorPage() {
     const totalHours = Math.floor(totalMinutes / 60)
     const totalDays = Math.floor(totalHours / 24)
     const totalWeeks = Math.floor(totalDays / 7)
-    const totalMonths = Math.floor(totalDays / 30.437) // Average month length
-    const totalYears = Math.floor(totalDays / 365.25) // Average year length
+    const totalMonths = Math.floor(totalDays / 30.437)
+    const totalYears = Math.floor(totalDays / 365.25)
 
-    // Breakdown
-    const years = Math.floor(totalDays / 365.25)
-    const remainingDaysAfterYears = totalDays - Math.floor(years * 365.25)
-    const months = Math.floor(remainingDaysAfterYears / 30.437)
-    const remainingDaysAfterMonths = remainingDaysAfterYears - Math.floor(months * 30.437)
-    const weeks = Math.floor(remainingDaysAfterMonths / 7)
-    const days = remainingDaysAfterMonths - (weeks * 7)
+    const yearsCalc = Math.floor(totalDays / 365.25)
+    const remainingDaysAfterYears = totalDays - Math.floor(yearsCalc * 365.25)
+    const monthsCalc = Math.floor(remainingDaysAfterYears / 30.437)
+    const remainingDaysAfterMonths = remainingDaysAfterYears - Math.floor(monthsCalc * 30.437)
+    const weeksCalc = Math.floor(remainingDaysAfterMonths / 7)
+    const daysCalc = remainingDaysAfterMonths - (weeksCalc * 7)
     const hoursRemaining = totalHours % 24
     const minutesRemaining = totalMinutes % 60
     const secondsRemaining = totalSeconds % 60
 
     return {
-      breakdown: { years, months, weeks, days, hours: hoursRemaining, minutes: minutesRemaining, seconds: secondsRemaining },
+      breakdown: { years: yearsCalc, months: monthsCalc, weeks: weeksCalc, days: daysCalc, hours: hoursRemaining, minutes: minutesRemaining, seconds: secondsRemaining },
       totals: { totalYears, totalMonths, totalWeeks, totalDays, totalHours, totalMinutes, totalSeconds }
     }
   }
@@ -91,30 +90,22 @@ export default function DateCalculatorPage() {
   const addSubtractResult = mode === 'add-subtract' ? calculateAddSubtract() : null
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
-      {/* Header */}
-      <div className="flex items-center gap-4">
-        <Link 
-          href="/" 
-          className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back
-        </Link>
-        <div className="flex-1">
-          <h1 className="text-3xl font-bold">Date Calculator</h1>
-          <p className="text-muted-foreground mt-1">Calculate date differences or add/subtract time</p>
-        </div>
-      </div>
+    <div className="page-container space-y-6">
+      <PageHeader
+        title="Date Calculator"
+        description="Calculate date differences or add/subtract time"
+        icon={Calendar}
+        color="fuchsia"
+      />
 
       {/* Mode Selection */}
       <div className="flex gap-2">
         <button
           onClick={() => setMode('difference')}
-          className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors ${
+          className={`flex-1 px-4 py-3 rounded-xl font-medium transition-all ${
             mode === 'difference'
-              ? 'bg-primary text-primary-foreground'
-              : 'bg-muted hover:bg-muted/80'
+              ? 'bg-gradient-to-r from-fuchsia-500 to-pink-500 text-white shadow-lg'
+              : 'bg-slate-800/50 text-slate-300 border border-slate-700/60 hover:bg-slate-700/50'
           }`}
         >
           <Calendar className="h-5 w-5 mx-auto mb-1" />
@@ -122,10 +113,10 @@ export default function DateCalculatorPage() {
         </button>
         <button
           onClick={() => setMode('add-subtract')}
-          className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors ${
+          className={`flex-1 px-4 py-3 rounded-xl font-medium transition-all ${
             mode === 'add-subtract'
-              ? 'bg-primary text-primary-foreground'
-              : 'bg-muted hover:bg-muted/80'
+              ? 'bg-gradient-to-r from-fuchsia-500 to-pink-500 text-white shadow-lg'
+              : 'bg-slate-800/50 text-slate-300 border border-slate-700/60 hover:bg-slate-700/50'
           }`}
         >
           <Plus className="h-5 w-5 mx-auto mb-1" />
@@ -134,17 +125,17 @@ export default function DateCalculatorPage() {
       </div>
 
       {/* Include Time Toggle */}
-      <div className="bg-card border rounded-xl p-4">
+      <div className="section-card">
         <label className="flex items-center gap-3 cursor-pointer">
           <input
             type="checkbox"
             checked={includeTime}
             onChange={(e) => setIncludeTime(e.target.checked)}
-            className="w-4 h-4 rounded"
+            className="w-4 h-4 rounded accent-fuchsia-500"
           />
           <div className="flex items-center gap-2">
-            <Clock className="h-4 w-4" />
-            <span className="font-medium">Include Time (Hours, Minutes, Seconds)</span>
+            <Clock className="h-4 w-4 text-fuchsia-400" />
+            <span className="font-medium text-slate-300">Include Time (Hours, Minutes, Seconds)</span>
           </div>
         </label>
       </div>
@@ -153,13 +144,13 @@ export default function DateCalculatorPage() {
       {mode === 'difference' && (
         <div className="space-y-4">
           <div className="grid sm:grid-cols-2 gap-4">
-            <div className="bg-card border rounded-xl p-4 space-y-3">
-              <h3 className="font-semibold">Start Date</h3>
+            <div className="section-card space-y-3">
+              <h3 className="font-semibold text-white">Start Date</h3>
               <input
                 type="date"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                className="w-full px-3 py-2 border rounded-lg"
+                className="input-modern"
               />
               {includeTime && (
                 <input
@@ -167,17 +158,17 @@ export default function DateCalculatorPage() {
                   step="1"
                   value={startTime}
                   onChange={(e) => setStartTime(e.target.value)}
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="input-modern"
                 />
               )}
             </div>
-            <div className="bg-card border rounded-xl p-4 space-y-3">
-              <h3 className="font-semibold">End Date</h3>
+            <div className="section-card space-y-3">
+              <h3 className="font-semibold text-white">End Date</h3>
               <input
                 type="date"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
-                className="w-full px-3 py-2 border rounded-lg"
+                className="input-modern"
               />
               {includeTime && (
                 <input
@@ -185,7 +176,7 @@ export default function DateCalculatorPage() {
                   step="1"
                   value={endTime}
                   onChange={(e) => setEndTime(e.target.value)}
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="input-modern"
                 />
               )}
             </div>
@@ -193,82 +184,82 @@ export default function DateCalculatorPage() {
 
           {difference && (
             <div className="space-y-4">
-              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 border-2 border-blue-400 dark:border-blue-700 rounded-xl p-6">
-                <h3 className="font-bold text-lg mb-4 text-blue-900 dark:text-blue-100">Time Difference</h3>
+              <div className="section-card border-fuchsia-500/30 bg-gradient-to-br from-fuchsia-500/10 to-pink-500/10">
+                <h3 className="font-bold text-lg mb-4 text-fuchsia-300">Time Difference</h3>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                   {difference.breakdown.years > 0 && (
-                    <div className="bg-white/60 dark:bg-black/20 rounded-lg p-3 text-center">
-                      <div className="text-2xl font-bold text-blue-900 dark:text-blue-100">{difference.breakdown.years}</div>
-                      <div className="text-xs text-blue-700 dark:text-blue-300">Years</div>
+                    <div className="bg-slate-950/50 rounded-xl p-3 text-center">
+                      <div className="text-2xl font-bold text-fuchsia-400">{difference.breakdown.years}</div>
+                      <div className="text-xs text-slate-400">Years</div>
                     </div>
                   )}
                   {difference.breakdown.months > 0 && (
-                    <div className="bg-white/60 dark:bg-black/20 rounded-lg p-3 text-center">
-                      <div className="text-2xl font-bold text-blue-900 dark:text-blue-100">{difference.breakdown.months}</div>
-                      <div className="text-xs text-blue-700 dark:text-blue-300">Months</div>
+                    <div className="bg-slate-950/50 rounded-xl p-3 text-center">
+                      <div className="text-2xl font-bold text-fuchsia-400">{difference.breakdown.months}</div>
+                      <div className="text-xs text-slate-400">Months</div>
                     </div>
                   )}
                   {difference.breakdown.weeks > 0 && (
-                    <div className="bg-white/60 dark:bg-black/20 rounded-lg p-3 text-center">
-                      <div className="text-2xl font-bold text-blue-900 dark:text-blue-100">{difference.breakdown.weeks}</div>
-                      <div className="text-xs text-blue-700 dark:text-blue-300">Weeks</div>
+                    <div className="bg-slate-950/50 rounded-xl p-3 text-center">
+                      <div className="text-2xl font-bold text-fuchsia-400">{difference.breakdown.weeks}</div>
+                      <div className="text-xs text-slate-400">Weeks</div>
                     </div>
                   )}
-                  <div className="bg-white/60 dark:bg-black/20 rounded-lg p-3 text-center">
-                    <div className="text-2xl font-bold text-blue-900 dark:text-blue-100">{difference.breakdown.days}</div>
-                    <div className="text-xs text-blue-700 dark:text-blue-300">Days</div>
+                  <div className="bg-slate-950/50 rounded-xl p-3 text-center">
+                    <div className="text-2xl font-bold text-fuchsia-400">{difference.breakdown.days}</div>
+                    <div className="text-xs text-slate-400">Days</div>
                   </div>
                   {includeTime && (
                     <>
-                      <div className="bg-white/60 dark:bg-black/20 rounded-lg p-3 text-center">
-                        <div className="text-2xl font-bold text-blue-900 dark:text-blue-100">{difference.breakdown.hours}</div>
-                        <div className="text-xs text-blue-700 dark:text-blue-300">Hours</div>
+                      <div className="bg-slate-950/50 rounded-xl p-3 text-center">
+                        <div className="text-2xl font-bold text-pink-400">{difference.breakdown.hours}</div>
+                        <div className="text-xs text-slate-400">Hours</div>
                       </div>
-                      <div className="bg-white/60 dark:bg-black/20 rounded-lg p-3 text-center">
-                        <div className="text-2xl font-bold text-blue-900 dark:text-blue-100">{difference.breakdown.minutes}</div>
-                        <div className="text-xs text-blue-700 dark:text-blue-300">Minutes</div>
+                      <div className="bg-slate-950/50 rounded-xl p-3 text-center">
+                        <div className="text-2xl font-bold text-pink-400">{difference.breakdown.minutes}</div>
+                        <div className="text-xs text-slate-400">Minutes</div>
                       </div>
-                      <div className="bg-white/60 dark:bg-black/20 rounded-lg p-3 text-center">
-                        <div className="text-2xl font-bold text-blue-900 dark:text-blue-100">{difference.breakdown.seconds}</div>
-                        <div className="text-xs text-blue-700 dark:text-blue-300">Seconds</div>
+                      <div className="bg-slate-950/50 rounded-xl p-3 text-center">
+                        <div className="text-2xl font-bold text-pink-400">{difference.breakdown.seconds}</div>
+                        <div className="text-xs text-slate-400">Seconds</div>
                       </div>
                     </>
                   )}
                 </div>
               </div>
 
-              <div className="bg-card border rounded-xl p-4">
-                <h4 className="font-semibold mb-3">Total Duration</h4>
+              <div className="section-card">
+                <h4 className="font-semibold mb-3 text-white">Total Duration</h4>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
                   <div>
-                    <div className="text-muted-foreground">Years</div>
-                    <div className="font-mono font-semibold">{difference.totals.totalYears.toLocaleString()}</div>
+                    <div className="text-slate-500">Years</div>
+                    <div className="font-mono font-semibold text-slate-300">{difference.totals.totalYears.toLocaleString()}</div>
                   </div>
                   <div>
-                    <div className="text-muted-foreground">Months</div>
-                    <div className="font-mono font-semibold">{difference.totals.totalMonths.toLocaleString()}</div>
+                    <div className="text-slate-500">Months</div>
+                    <div className="font-mono font-semibold text-slate-300">{difference.totals.totalMonths.toLocaleString()}</div>
                   </div>
                   <div>
-                    <div className="text-muted-foreground">Weeks</div>
-                    <div className="font-mono font-semibold">{difference.totals.totalWeeks.toLocaleString()}</div>
+                    <div className="text-slate-500">Weeks</div>
+                    <div className="font-mono font-semibold text-slate-300">{difference.totals.totalWeeks.toLocaleString()}</div>
                   </div>
                   <div>
-                    <div className="text-muted-foreground">Days</div>
-                    <div className="font-mono font-semibold">{difference.totals.totalDays.toLocaleString()}</div>
+                    <div className="text-slate-500">Days</div>
+                    <div className="font-mono font-semibold text-slate-300">{difference.totals.totalDays.toLocaleString()}</div>
                   </div>
                   {includeTime && (
                     <>
                       <div>
-                        <div className="text-muted-foreground">Hours</div>
-                        <div className="font-mono font-semibold">{difference.totals.totalHours.toLocaleString()}</div>
+                        <div className="text-slate-500">Hours</div>
+                        <div className="font-mono font-semibold text-slate-300">{difference.totals.totalHours.toLocaleString()}</div>
                       </div>
                       <div>
-                        <div className="text-muted-foreground">Minutes</div>
-                        <div className="font-mono font-semibold">{difference.totals.totalMinutes.toLocaleString()}</div>
+                        <div className="text-slate-500">Minutes</div>
+                        <div className="font-mono font-semibold text-slate-300">{difference.totals.totalMinutes.toLocaleString()}</div>
                       </div>
                       <div>
-                        <div className="text-muted-foreground">Seconds</div>
-                        <div className="font-mono font-semibold">{difference.totals.totalSeconds.toLocaleString()}</div>
+                        <div className="text-slate-500">Seconds</div>
+                        <div className="font-mono font-semibold text-slate-300">{difference.totals.totalSeconds.toLocaleString()}</div>
                       </div>
                     </>
                   )}
@@ -282,13 +273,13 @@ export default function DateCalculatorPage() {
       {/* Add/Subtract Mode */}
       {mode === 'add-subtract' && (
         <div className="space-y-4">
-          <div className="bg-card border rounded-xl p-4 space-y-3">
-            <h3 className="font-semibold">Base Date</h3>
+          <div className="section-card space-y-3">
+            <h3 className="font-semibold text-white">Base Date</h3>
             <input
               type="date"
               value={baseDate}
               onChange={(e) => setBaseDate(e.target.value)}
-              className="w-full px-3 py-2 border rounded-lg"
+              className="input-modern"
             />
             {includeTime && (
               <input
@@ -296,7 +287,7 @@ export default function DateCalculatorPage() {
                 step="1"
                 value={baseTime}
                 onChange={(e) => setBaseTime(e.target.value)}
-                className="w-full px-3 py-2 border rounded-lg"
+                className="input-modern"
               />
             )}
           </div>
@@ -304,10 +295,10 @@ export default function DateCalculatorPage() {
           <div className="flex gap-2">
             <button
               onClick={() => setOperation('add')}
-              className={`flex-1 px-4 py-2 rounded-lg font-medium transition-colors ${
+              className={`flex-1 px-4 py-2 rounded-xl font-medium transition-all ${
                 operation === 'add'
-                  ? 'bg-green-500 text-white'
-                  : 'bg-muted hover:bg-muted/80'
+                  ? 'bg-emerald-500 text-white'
+                  : 'bg-slate-800/50 text-slate-300 border border-slate-700/60 hover:bg-slate-700/50'
               }`}
             >
               <Plus className="h-4 w-4 inline mr-1" />
@@ -315,10 +306,10 @@ export default function DateCalculatorPage() {
             </button>
             <button
               onClick={() => setOperation('subtract')}
-              className={`flex-1 px-4 py-2 rounded-lg font-medium transition-colors ${
+              className={`flex-1 px-4 py-2 rounded-xl font-medium transition-all ${
                 operation === 'subtract'
                   ? 'bg-red-500 text-white'
-                  : 'bg-muted hover:bg-muted/80'
+                  : 'bg-slate-800/50 text-slate-300 border border-slate-700/60 hover:bg-slate-700/50'
               }`}
             >
               <Minus className="h-4 w-4 inline mr-1" />
@@ -326,79 +317,79 @@ export default function DateCalculatorPage() {
             </button>
           </div>
 
-          <div className="bg-card border rounded-xl p-4 space-y-3">
-            <h3 className="font-semibold">Amount to {operation === 'add' ? 'Add' : 'Subtract'}</h3>
+          <div className="section-card space-y-3">
+            <h3 className="font-semibold text-white">Amount to {operation === 'add' ? 'Add' : 'Subtract'}</h3>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <div>
-                <label className="text-xs text-muted-foreground">Years</label>
+                <label className="text-xs text-slate-500">Years</label>
                 <input
                   type="number"
                   min="0"
                   value={years}
                   onChange={(e) => setYears(e.target.value)}
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="input-modern"
                 />
               </div>
               <div>
-                <label className="text-xs text-muted-foreground">Months</label>
+                <label className="text-xs text-slate-500">Months</label>
                 <input
                   type="number"
                   min="0"
                   value={months}
                   onChange={(e) => setMonths(e.target.value)}
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="input-modern"
                 />
               </div>
               <div>
-                <label className="text-xs text-muted-foreground">Weeks</label>
+                <label className="text-xs text-slate-500">Weeks</label>
                 <input
                   type="number"
                   min="0"
                   value={weeks}
                   onChange={(e) => setWeeks(e.target.value)}
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="input-modern"
                 />
               </div>
               <div>
-                <label className="text-xs text-muted-foreground">Days</label>
+                <label className="text-xs text-slate-500">Days</label>
                 <input
                   type="number"
                   min="0"
                   value={days}
                   onChange={(e) => setDays(e.target.value)}
-                  className="w-full px-3 py-2 border rounded-lg"
+                  className="input-modern"
                 />
               </div>
               {includeTime && (
                 <>
                   <div>
-                    <label className="text-xs text-muted-foreground">Hours</label>
+                    <label className="text-xs text-slate-500">Hours</label>
                     <input
                       type="number"
                       min="0"
                       value={hours}
                       onChange={(e) => setHours(e.target.value)}
-                      className="w-full px-3 py-2 border rounded-lg"
+                      className="input-modern"
                     />
                   </div>
                   <div>
-                    <label className="text-xs text-muted-foreground">Minutes</label>
+                    <label className="text-xs text-slate-500">Minutes</label>
                     <input
                       type="number"
                       min="0"
                       value={minutes}
                       onChange={(e) => setMinutes(e.target.value)}
-                      className="w-full px-3 py-2 border rounded-lg"
+                      className="input-modern"
                     />
                   </div>
                   <div>
-                    <label className="text-xs text-muted-foreground">Seconds</label>
+                    <label className="text-xs text-slate-500">Seconds</label>
                     <input
                       type="number"
                       min="0"
                       value={seconds}
                       onChange={(e) => setSeconds(e.target.value)}
-                      className="w-full px-3 py-2 border rounded-lg"
+                      className="input-modern"
                     />
                   </div>
                 </>
@@ -407,12 +398,12 @@ export default function DateCalculatorPage() {
           </div>
 
           {addSubtractResult && (
-            <div className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950/30 dark:to-pink-950/30 border-2 border-purple-400 dark:border-purple-700 rounded-xl p-6">
-              <h3 className="font-bold text-lg mb-3 text-purple-900 dark:text-purple-100">Result</h3>
+            <div className="section-card border-violet-500/30 bg-gradient-to-br from-violet-500/10 to-pink-500/10">
+              <h3 className="font-bold text-lg mb-3 text-violet-300">Result</h3>
               <div className="space-y-2">
-                <div className="bg-white/60 dark:bg-black/20 rounded-lg p-4">
-                  <div className="text-sm text-purple-700 dark:text-purple-300 mb-1">Date</div>
-                  <div className="text-2xl font-bold text-purple-900 dark:text-purple-100">
+                <div className="bg-slate-950/50 rounded-xl p-4">
+                  <div className="text-sm text-violet-400 mb-1">Date</div>
+                  <div className="text-2xl font-bold text-white">
                     {addSubtractResult.toLocaleDateString('en-GB', { 
                       weekday: 'long', 
                       year: 'numeric', 
@@ -422,16 +413,16 @@ export default function DateCalculatorPage() {
                   </div>
                 </div>
                 {includeTime && (
-                  <div className="bg-white/60 dark:bg-black/20 rounded-lg p-4">
-                    <div className="text-sm text-purple-700 dark:text-purple-300 mb-1">Time</div>
-                    <div className="text-2xl font-bold text-purple-900 dark:text-purple-100 font-mono">
+                  <div className="bg-slate-950/50 rounded-xl p-4">
+                    <div className="text-sm text-violet-400 mb-1">Time</div>
+                    <div className="text-2xl font-bold text-white font-mono">
                       {addSubtractResult.toLocaleTimeString('en-GB')}
                     </div>
                   </div>
                 )}
-                <div className="bg-white/60 dark:bg-black/20 rounded-lg p-4">
-                  <div className="text-sm text-purple-700 dark:text-purple-300 mb-1">ISO Format</div>
-                  <div className="text-sm font-mono text-purple-900 dark:text-purple-100">
+                <div className="bg-slate-950/50 rounded-xl p-4">
+                  <div className="text-sm text-violet-400 mb-1">ISO Format</div>
+                  <div className="text-sm font-mono text-slate-300">
                     {addSubtractResult.toISOString()}
                   </div>
                 </div>

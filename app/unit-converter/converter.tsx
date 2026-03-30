@@ -54,36 +54,30 @@ export default function UnitConverter() {
 
   return (
     <div className="min-h-screen relative">
-      {/* Background */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="bg-blur-circle w-[400px] h-[400px] bg-violet-600/15 -top-32 -right-32" />
-        <div className="bg-blur-circle w-[300px] h-[300px] bg-cyan-600/15 bottom-0 -left-20" />
-      </div>
-
       <div className="relative z-10 max-w-lg mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">
           <Link 
             href="/" 
-            className="p-2 rounded-xl bg-secondary/50 hover:bg-secondary transition-colors"
+            className="p-2 rounded-xl bg-slate-800/50 hover:bg-slate-700/50 transition-colors"
           >
             <ArrowLeft className="h-5 w-5" />
           </Link>
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold">Unit Converter</h1>
-            <p className="text-sm text-muted-foreground">แปลงหน่วย 15+ หมวดหมู่</p>
+            <h1 className="text-2xl md:text-3xl font-bold text-white">Unit Converter</h1>
+            <p className="text-sm text-slate-400">แปลงหน่วย 15+ หมวดหมู่</p>
           </div>
         </div>
 
         {/* Category Selection */}
         <div className="mb-6">
-          <label className="block text-sm font-medium text-muted-foreground mb-2">
+          <label className="block text-sm font-medium text-slate-400 mb-2">
             หมวดหมู่
           </label>
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value as UnitCategory)}
-            className="select-premium"
+            className="select-modern"
           >
             {Object.entries(unitCategories).map(([key, label]) => (
               <option key={key} value={key}>{label}</option>
@@ -92,40 +86,40 @@ export default function UnitConverter() {
         </div>
 
         {/* Main Card */}
-        <div className="card-premium p-6 space-y-6">
+        <div className="section-card p-6 space-y-6">
           {/* Amount Input */}
           <div>
-            <label className="block text-sm font-medium text-muted-foreground mb-2">
+            <label className="block text-sm font-medium text-slate-400 mb-2">
               จำนวน
             </label>
             <input
               type="number"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              className="input-premium text-2xl md:text-3xl font-bold h-16"
+              className="input-modern text-2xl md:text-3xl font-bold h-16"
               placeholder="0"
             />
           </div>
 
           {/* From Unit */}
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
               จาก
             </label>
             <div className="relative mb-2">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
               <input
                 type="text"
                 value={fromSearch}
                 onChange={(e) => setFromSearch(e.target.value)}
                 placeholder="ค้นหาหน่วย..."
-                className="input-premium pl-10 text-sm"
+                className="input-modern pl-10 text-sm"
               />
             </div>
             <select
               value={fromUnit}
               onChange={(e) => setFromUnit(e.target.value)}
-              className="select-premium"
+              className="select-modern"
               size={Math.min(filteredFromUnits.length, 5)}
               style={{ height: 'auto', minHeight: '44px' }}
             >
@@ -139,7 +133,7 @@ export default function UnitConverter() {
           <div className="flex justify-center -my-2">
             <button 
               onClick={swapUnits}
-              className="p-3 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 text-white shadow-lg hover:shadow-xl hover:scale-110 active:scale-95 transition-all"
+              className="btn-gradient p-3 rounded-full shadow-lg hover:shadow-xl hover:scale-110 active:scale-95 transition-all"
               title="สลับหน่วย"
             >
               <ArrowUpDown className="h-5 w-5" />
@@ -148,23 +142,23 @@ export default function UnitConverter() {
 
           {/* To Unit */}
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
               เป็น
             </label>
             <div className="relative mb-2">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
               <input
                 type="text"
                 value={toSearch}
                 onChange={(e) => setToSearch(e.target.value)}
                 placeholder="ค้นหาหน่วย..."
-                className="input-premium pl-10 text-sm"
+                className="input-modern pl-10 text-sm"
               />
             </div>
             <select
               value={toUnit}
               onChange={(e) => setToUnit(e.target.value)}
-              className="select-premium"
+              className="select-modern"
               size={Math.min(filteredToUnits.length, 5)}
               style={{ height: 'auto', minHeight: '44px' }}
             >
@@ -175,15 +169,15 @@ export default function UnitConverter() {
           </div>
 
           {/* Result */}
-          <div className="pt-6 border-t border-border">
-            <label className="block text-sm font-medium text-muted-foreground mb-3">
+          <div className="pt-6 border-t border-slate-700">
+            <label className="block text-sm font-medium text-slate-400 mb-3">
               ผลลัพธ์
             </label>
             <div className="p-4 rounded-xl bg-gradient-to-br from-violet-500/10 to-purple-600/10 border border-violet-500/20">
               <div className="text-3xl md:text-4xl font-bold text-gradient break-all">
                 {result === 0 && amount !== "0" && amount !== "" ? "—" : formatResult(result)}
               </div>
-              <div className="text-sm text-muted-foreground mt-2">
+              <div className="text-sm text-slate-400 mt-2">
                 {units[category].find(u => u.id === toUnit)?.label}
               </div>
             </div>
@@ -192,7 +186,7 @@ export default function UnitConverter() {
 
         {/* Info */}
         <div className="mt-6 text-center">
-          <p className="text-xs text-muted-foreground">
+          <p className="text-xs text-slate-400">
             💡 ใช้ช่องค้นหาเพื่อหาหน่วยที่ต้องการได้เร็วขึ้น
           </p>
         </div>

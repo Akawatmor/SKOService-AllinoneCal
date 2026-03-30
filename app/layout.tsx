@@ -1,14 +1,15 @@
 import type { Metadata, Viewport } from 'next'
-import { Inter } from 'next/font/google'
+import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
 import Link from 'next/link'
 import { Calculator, Home } from 'lucide-react'
 import PWAInstall from './components/PWAInstall'
 
-const inter = Inter({ subsets: ['latin'] })
+const geist = Geist({ subsets: ['latin'], variable: '--font-geist' })
+const geistMono = Geist_Mono({ subsets: ['latin'], variable: '--font-geist-mono' })
 
 export const viewport: Viewport = {
-  themeColor: '#0f172a',
+  themeColor: '#020617',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
@@ -36,50 +37,47 @@ export default function RootLayout({
   return (
     <html lang="th" className="dark">
       <head>
-        <link rel="icon" href="/icon-192.png" />
-        <link rel="apple-touch-icon" href="/icon-192.png" />
+        <link rel="icon" href="/icon-192.svg" type="image/svg+xml" />
+        <link rel="apple-touch-icon" href="/icon-192.svg" />
       </head>
-      <body className={`${inter.className} antialiased`}>
-        <div className="flex flex-col min-h-screen">
-          {/* Header */}
-          <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl">
-            <div className="max-w-6xl mx-auto flex h-16 items-center justify-between px-4">
+      <body className={`${geist.variable} ${geistMono.variable} font-sans antialiased`}>
+        <div className="min-h-screen bg-slate-950 text-slate-100 relative overflow-hidden">
+          {/* Background Glow Effects */}
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute -top-24 -left-24 w-80 h-80 bg-violet-500/10 blur-3xl rounded-full" />
+            <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-cyan-500/10 blur-3xl rounded-full" />
+          </div>
+          
+          {/* Navbar */}
+          <nav className="sticky top-0 z-20 border-b border-slate-800/80 bg-slate-950/80 backdrop-blur">
+            <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-8 py-3 flex items-center justify-between">
               <Link href="/" className="flex items-center gap-3 group">
-                <div className="icon-container group-hover:scale-105 transition-transform">
+                <div className="p-2.5 rounded-xl bg-gradient-to-br from-violet-500 to-cyan-500 shadow-lg group-hover:scale-105 transition-transform">
                   <Calculator className="h-5 w-5 text-white" />
                 </div>
-                <span className="font-bold text-lg hidden sm:block">
-                  <span className="text-gradient">SKOService</span>
+                <span className="text-base sm:text-lg font-bold bg-gradient-to-r from-violet-300 to-cyan-300 bg-clip-text text-transparent">
+                  SKOService
                 </span>
               </Link>
               
-              <nav className="flex items-center gap-1">
-                <Link 
-                  href="/" 
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-all"
-                >
-                  <Home className="h-4 w-4" />
-                  <span className="hidden sm:inline">หน้าหลัก</span>
-                </Link>
-              </nav>
+              <Link 
+                href="/" 
+                className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800/50 transition-all"
+              >
+                <Home className="h-4 w-4" />
+                <span className="hidden sm:inline">หน้าหลัก</span>
+              </Link>
             </div>
-          </header>
+          </nav>
           
           {/* Main Content */}
-          <main className="flex-1">
+          <main className="relative z-10">
             {children}
           </main>
           
           {/* Footer */}
-          <footer className="border-t border-border/40 py-8 mt-auto">
-            <div className="max-w-6xl mx-auto px-4 text-center">
-              <p className="text-sm text-muted-foreground">
-                © {new Date().getFullYear()} <span className="text-gradient font-semibold">SKOService</span>
-              </p>
-              <p className="text-xs text-muted-foreground/60 mt-1">
-                Built with Next.js • Works Offline
-              </p>
-            </div>
+          <footer className="relative z-10 text-center text-slate-500 text-sm mt-10 border-t border-slate-800 pt-6 pb-8">
+            <p>© {new Date().getFullYear()} <span className="bg-gradient-to-r from-violet-400 to-cyan-400 bg-clip-text text-transparent font-semibold">SKOService</span> · Built with Next.js</p>
           </footer>
         </div>
         
