@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { HardDrive, Database, Info } from 'lucide-react'
+import { HardDrive, Info } from 'lucide-react'
 import PageHeader from '../components/PageHeader'
 
 type Unit = {
@@ -94,18 +94,6 @@ export default function StorageConverterPage() {
         icon={HardDrive}
         color="indigo"
       />
-
-      {/* Info Banner */}
-      <div className="section-card border-indigo-500/30 bg-indigo-500/5">
-        <div className="flex gap-3">
-          <Database className="h-5 w-5 text-indigo-400 flex-shrink-0 mt-0.5" />
-          <div className="text-sm">
-            <p className="font-semibold text-indigo-300 mb-1">Binary vs Decimal</p>
-            <p className="text-slate-400"><strong className="text-amber-400">Decimal (KB, MB, GB):</strong> Base 1000 - Used by storage manufacturers</p>
-            <p className="text-slate-400"><strong className="text-violet-400">Binary (KiB, MiB, GiB):</strong> Base 1024 - Used by operating systems</p>
-          </div>
-        </div>
-      </div>
 
       {/* Input Section */}
       <div className="section-card space-y-4">

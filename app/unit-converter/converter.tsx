@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { ArrowUpDown, Search, ArrowLeft } from "lucide-react"
+import { ArrowLeftRight, Search, ArrowLeft } from "lucide-react"
 import { UnitCategory, unitCategories, units, convert } from "@/lib/units"
 import Link from "next/link"
 
@@ -42,6 +42,7 @@ export default function UnitConverter() {
     const temp = fromUnit
     setFromUnit(toUnit)
     setToUnit(temp)
+    setAmount(formatResult(result))
   }
 
   const formatResult = (num: number): string => {
@@ -54,7 +55,7 @@ export default function UnitConverter() {
 
   return (
     <div className="min-h-screen relative">
-      <div className="relative z-10 max-w-lg mx-auto px-4 py-8">
+      <div className="relative z-10 max-w-4xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">
           <Link 
@@ -85,101 +86,90 @@ export default function UnitConverter() {
           </select>
         </div>
 
-        {/* Main Card */}
-        <div className="section-card p-6 space-y-6">
-          {/* Amount Input */}
-          <div>
-            <label className="block text-sm font-medium text-slate-400 mb-2">
-              จำนวน
-            </label>
-            <input
-              type="number"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              className="input-modern text-2xl md:text-3xl font-bold h-16"
-              placeholder="0"
-            />
-          </div>
+        {/* Main Card - Horizontal Layout */}
+        <div className="section-card p-5 sm:p-6">
+          <div className="grid grid-cols-[1fr_44px_1fr] gap-3 sm:gap-4 items-start">
 
-          {/* From Unit */}
-          <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
-              จาก
-            </label>
-            <div className="relative mb-2">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+            {/* From Column */}
+            <div className="space-y-3">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400">
+                จาก
+              </label>
               <input
-                type="text"
-                value={fromSearch}
-                onChange={(e) => setFromSearch(e.target.value)}
-                placeholder="ค้นหาหน่วย..."
-                className="input-modern pl-10 text-sm"
+                type="number"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                className="input-modern text-xl sm:text-2xl font-bold h-14"
+                placeholder="0"
               />
-            </div>
-            <select
-              value={fromUnit}
-              onChange={(e) => setFromUnit(e.target.value)}
-              className="select-modern"
-              size={Math.min(filteredFromUnits.length, 5)}
-              style={{ height: 'auto', minHeight: '44px' }}
-            >
-              {filteredFromUnits.map((u) => (
-                <option key={u.id} value={u.id}>{u.label}</option>
-              ))}
-            </select>
-          </div>
-
-          {/* Swap Button */}
-          <div className="flex justify-center -my-2">
-            <button 
-              onClick={swapUnits}
-              className="btn-gradient p-3 rounded-full shadow-lg hover:shadow-xl hover:scale-110 active:scale-95 transition-all"
-              title="สลับหน่วย"
-            >
-              <ArrowUpDown className="h-5 w-5" />
-            </button>
-          </div>
-
-          {/* To Unit */}
-          <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
-              เป็น
-            </label>
-            <div className="relative mb-2">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
-              <input
-                type="text"
-                value={toSearch}
-                onChange={(e) => setToSearch(e.target.value)}
-                placeholder="ค้นหาหน่วย..."
-                className="input-modern pl-10 text-sm"
-              />
-            </div>
-            <select
-              value={toUnit}
-              onChange={(e) => setToUnit(e.target.value)}
-              className="select-modern"
-              size={Math.min(filteredToUnits.length, 5)}
-              style={{ height: 'auto', minHeight: '44px' }}
-            >
-              {filteredToUnits.map((u) => (
-                <option key={u.id} value={u.id}>{u.label}</option>
-              ))}
-            </select>
-          </div>
-
-          {/* Result */}
-          <div className="pt-6 border-t border-slate-700">
-            <label className="block text-sm font-medium text-slate-400 mb-3">
-              ผลลัพธ์
-            </label>
-            <div className="p-4 rounded-xl bg-gradient-to-br from-violet-500/10 to-purple-600/10 border border-violet-500/20">
-              <div className="text-3xl md:text-4xl font-bold text-gradient break-all">
-                {result === 0 && amount !== "0" && amount !== "" ? "—" : formatResult(result)}
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+                <input
+                  type="text"
+                  value={fromSearch}
+                  onChange={(e) => setFromSearch(e.target.value)}
+                  placeholder="ค้นหาหน่วย..."
+                  className="input-modern pl-10 text-sm"
+                />
               </div>
-              <div className="text-sm text-slate-400 mt-2">
+              <select
+                value={fromUnit}
+                onChange={(e) => setFromUnit(e.target.value)}
+                className="select-modern"
+                size={Math.min(filteredFromUnits.length, 5)}
+                style={{ height: 'auto', minHeight: '44px' }}
+              >
+                {filteredFromUnits.map((u) => (
+                  <option key={u.id} value={u.id}>{u.label}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Swap Button - centered vertically */}
+            <div className="flex items-start justify-center pt-7">
+              <button
+                onClick={swapUnits}
+                className="btn-gradient p-2.5 rounded-full shadow-lg hover:shadow-xl hover:scale-110 active:scale-95 transition-all"
+                title="สลับหน่วย"
+              >
+                <ArrowLeftRight className="h-4 w-4" />
+              </button>
+            </div>
+
+            {/* To Column */}
+            <div className="space-y-3">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400">
+                เป็น
+              </label>
+              <div className="h-14 flex items-center px-4 rounded-xl bg-gradient-to-br from-violet-500/10 to-purple-600/10 border border-violet-500/20">
+                <div className="text-xl sm:text-2xl font-bold text-gradient break-all leading-tight">
+                  {result === 0 && amount !== "0" && amount !== "" ? "—" : formatResult(result)}
+                </div>
+              </div>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+                <input
+                  type="text"
+                  value={toSearch}
+                  onChange={(e) => setToSearch(e.target.value)}
+                  placeholder="ค้นหาหน่วย..."
+                  className="input-modern pl-10 text-sm"
+                />
+              </div>
+              <select
+                value={toUnit}
+                onChange={(e) => setToUnit(e.target.value)}
+                className="select-modern"
+                size={Math.min(filteredToUnits.length, 5)}
+                style={{ height: 'auto', minHeight: '44px' }}
+              >
+                {filteredToUnits.map((u) => (
+                  <option key={u.id} value={u.id}>{u.label}</option>
+                ))}
+              </select>
+              <p className="text-xs text-slate-500 text-center">
                 {units[category].find(u => u.id === toUnit)?.label}
-              </div>
+              </p>
             </div>
           </div>
         </div>
@@ -194,3 +184,6 @@ export default function UnitConverter() {
     </div>
   )
 }
+
+
+ 

@@ -1,12 +1,11 @@
 import type { Metadata, Viewport } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
+import { Anuphan } from 'next/font/google'
 import './globals.css'
 import Link from 'next/link'
 import { Calculator, Home } from 'lucide-react'
 import PWAInstall from './components/PWAInstall'
 
-const geist = Geist({ subsets: ['latin'], variable: '--font-geist' })
-const geistMono = Geist_Mono({ subsets: ['latin'], variable: '--font-geist-mono' })
+const anuphan = Anuphan({ subsets: ['latin', 'thai'], variable: '--font-anuphan', weight: ['300', '400', '500', '600', '700'] })
 
 export const viewport: Viewport = {
   themeColor: '#020617',
@@ -40,7 +39,7 @@ export default function RootLayout({
         <link rel="icon" href="/icon-192.svg" type="image/svg+xml" />
         <link rel="apple-touch-icon" href="/icon-192.svg" />
       </head>
-      <body className={`${geist.variable} ${geistMono.variable} font-sans antialiased`}>
+      <body className={`${anuphan.variable} font-sans antialiased`}>
         <div className="min-h-screen bg-slate-950 text-slate-100 relative overflow-hidden">
           {/* Background Glow Effects */}
           <div className="absolute inset-0 pointer-events-none">

@@ -169,7 +169,7 @@ export default function Home() {
         href={tool.href}
         onClick={() => handleToolClick(tool.id, tool.href)}
         className={`tool-card group ${colors.border} ${colors.bg} relative`}
-        style={{ animationDelay: `${index * 50}ms` }}
+
       >
         <button
           onClick={(e) => handleToggleStar(e, tool.id, tool.href)}
@@ -210,7 +210,7 @@ export default function Home() {
   return (
     <div className="page-container flex flex-col gap-8 md:gap-12">
       {/* Hero Section */}
-      <header className="text-center space-y-4 animate-slide-up">
+      <header className="text-center space-y-4">
         <div className="flex items-center justify-center gap-3 mb-6">
           <div className="badge badge-primary">
             <Sparkles className="h-3.5 w-3.5" />
@@ -227,7 +227,7 @@ export default function Home() {
         </div>
         
         <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight pb-2 drop-shadow-[0_0_16px_rgba(139,92,246,0.25)]">
-          <span className="text-gradient animate-shimmer">{t.home.title}</span>
+          <span className="text-gradient">{t.home.title}</span>
         </h1>
         
         <p className="text-base sm:text-lg md:text-xl text-slate-400 max-w-2xl mx-auto">
@@ -301,7 +301,7 @@ export default function Home() {
       </div>
 
       {/* Bottom Info */}
-      <div className="text-center animate-fade-in">
+      <div className="text-center">
         <div className="inline-flex items-center gap-3 px-5 py-3 rounded-full bg-slate-900/50 border border-slate-800/60">
           <span className="text-2xl">📱</span>
           <span className="text-sm text-slate-400">
