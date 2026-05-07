@@ -11,21 +11,26 @@
   "dependencies": {
     "@tailwindcss/postcss": "^4.1.18",
     "clsx": "latest",
+    "katex": "^0.16.45",
     "lucide-react": "latest",
     "next": "latest",
+    "plotly.js": "^3.5.0",
     "react": "latest",
     "react-dom": "latest",
+    "react-plotly.js": "^2.6.0",
     "tailwind-merge": "latest"
   },
   "devDependencies": {
     "@types/node": "latest",
+    "@types/plotly.js": "^3.0.10",
     "@types/react": "latest",
     "@types/react-dom": "latest",
-    "typescript": "latest",
-    "tailwindcss": "latest",
-    "postcss": "latest",
+    "@types/react-plotly.js": "^2.6.4",
     "autoprefixer": "latest",
     "eslint": "latest",
-    "eslint-config-next": "latest"
+    "eslint-config-next": "latest",
+    "postcss": "latest",
+    "tailwindcss": "latest",
+    "typescript": "latest"
   }
 }

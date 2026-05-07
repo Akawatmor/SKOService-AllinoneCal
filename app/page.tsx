@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { ArrowLeftRight, CheckCircle2, Calculator, ArrowRight, Sigma, Binary, Calendar, HardDrive, Atom, Sparkles, Search, Star, Clock, Globe } from 'lucide-react'
+import { ArrowLeftRight, CheckCircle2, Calculator, ArrowRight, Sigma, Binary, Calendar, HardDrive, Atom, Sparkles, Search, Star, Clock, Globe, Zap, FlaskConical, Rocket } from 'lucide-react'
 import { getRecentTools, getStarredTools, toggleToolStar, isToolStarred, markToolUsed, type ToolInfo } from '@/lib/toolsStore'
 import { useTranslation, type Language } from '@/lib/i18n'
 
@@ -86,7 +86,37 @@ const tools = [
     href: "/storage-converter",
     icon: HardDrive,
     color: "indigo",
-  }
+  },
+  {
+    id: 'electrical',
+    title: "Electrical Formulas",
+    titleTh: "สูตรคำนวณไฟฟ้า",
+    description: "Ohm's law, power, reactance, AC phase, transformer, RC/RL circuits",
+    descriptionTh: "กฎโอห์ม, กำลังไฟฟ้า, Reactance, เฟส/AC, หม้อแปลง, วงจร RC/RL",
+    href: "/electrical",
+    icon: Zap,
+    color: "amber",
+  },
+  {
+    id: 'chemistry',
+    title: "Chemistry Formulas",
+    titleTh: "สูตรคำนวณเคมี",
+    description: "Mole calculations, concentration, stoichiometry, thermochemistry, gas laws",
+    descriptionTh: "การคำนวณโมล, ความเข้มข้น, สโตอิคิโอเมทรี, เทอร์โมเคมี, กฎแก๊ส",
+    href: "/chemistry",
+    icon: FlaskConical,
+    color: "emerald",
+  },
+  {
+    id: 'physics',
+    title: "Physics Formulas",
+    titleTh: "สูตรคำนวณฟิสิกส์",
+    description: "Kinematics, forces, energy, springs/SHM, projectile motion, waves & optics",
+    descriptionTh: "จลนศาสตร์, แรงและกฎนิวตัน, พลังงาน, สปริง/SHM, โพรเจกไทล์, คลื่นและแสง",
+    href: "/physics",
+    icon: Rocket,
+    color: "cyan",
+  },
 ]
 
 const colorClasses: Record<string, { border: string; bg: string; icon: string }> = {
@@ -99,6 +129,35 @@ const colorClasses: Record<string, { border: string; bg: string; icon: string }>
   fuchsia: { border: "border-fuchsia-500/20 hover:border-fuchsia-500/40", bg: "bg-fuchsia-500/10", icon: "text-fuchsia-400 group-hover:text-fuchsia-300" },
   indigo: { border: "border-indigo-500/20 hover:border-indigo-500/40", bg: "bg-indigo-500/10", icon: "text-indigo-400 group-hover:text-indigo-300" },
 }
+
+const quickStartIds = ['unit-converter', 'value-for-money', 'periodic-table']
+
+const toolGroups = [
+  {
+    key: 'essentials',
+    titleTh: 'ใช้งานประจำวัน',
+    titleEn: 'Daily Essentials',
+    descriptionTh: 'เครื่องมือที่ใช้บ่อยสำหรับงานทั่วไปและการตัดสินใจเร็ว',
+    descriptionEn: 'Fast utility tools for common calculations and day-to-day decisions',
+    ids: ['unit-converter', 'value-for-money', 'date-calculator', 'storage-converter'],
+  },
+  {
+    key: 'math',
+    titleTh: 'คณิตศาสตร์และตรรกะ',
+    titleEn: 'Math and Logic',
+    descriptionTh: 'ต่อยอดจากการคำนวณพื้นฐานไปจนถึง symbolic math',
+    descriptionEn: 'From chained arithmetic to symbolic and base conversions',
+    ids: ['chain-calculator', 'cas-calculator', 'base-converter'],
+  },
+  {
+    key: 'science',
+    titleTh: 'วิทยาศาสตร์และวิศวกรรม',
+    titleEn: 'Science and Engineering',
+    descriptionTh: 'ชุดเครื่องมือสำหรับเรียน วิเคราะห์ และใช้งานเชิงเทคนิค',
+    descriptionEn: 'Technical tools for study, analysis, and engineering workflows',
+    ids: ['periodic-table', 'electrical', 'chemistry', 'physics'],
+  },
+]
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState('')
@@ -156,6 +215,29 @@ export default function Home() {
 
   const recentToolsData = recentTools.map(rt => tools.find(t => t.id === rt.id)).filter(Boolean) as typeof tools
   const starredToolsData = starredTools.map(st => tools.find(t => t.id === st.id)).filter(Boolean) as typeof tools
+  const quickStartTools = quickStartIds.map(id => tools.find(tool => tool.id === id)).filter(Boolean) as typeof tools
+  const groupedTools = toolGroups.map((group) => ({
+    ...group,
+    tools: group.ids.map((id) => tools.find((tool) => tool.id === id)).filter(Boolean) as typeof tools,
+  }))
+
+  const heroStats = [
+    {
+      label: language === 'th' ? 'เครื่องมือพร้อมใช้' : 'Ready tools',
+      value: String(tools.length),
+      detail: language === 'th' ? 'ครอบคลุมงานประจำวันและสายเทคนิค' : 'Daily and technical workflows covered',
+    },
+    {
+      label: language === 'th' ? 'ใช้งานออฟไลน์' : 'Offline ready',
+      value: 'PWA',
+      detail: language === 'th' ? 'เปิดใช้ได้ต่อเนื่องแม้สัญญาณไม่เสถียร' : 'Keep working even when connectivity is limited',
+    },
+    {
+      label: language === 'th' ? 'เริ่มใช้งานเร็ว' : 'Fast start',
+      value: language === 'th' ? 'ค้นหาไว' : 'Search first',
+      detail: language === 'th' ? 'หาเครื่องมือที่ต้องการจากคำอธิบายได้ทันที' : 'Jump to the right tool directly from search',
+    },
+  ]
 
   const ToolCard = ({ tool, index }: { tool: typeof tools[0]; index: number }) => {
     const colors = colorClasses[tool.color]
@@ -168,7 +250,8 @@ export default function Home() {
         key={tool.href}
         href={tool.href}
         onClick={() => handleToolClick(tool.id, tool.href)}
-        className={`tool-card group ${colors.border} ${colors.bg} relative`}
+        className={`tool-card group ${colors.border} ${colors.bg} relative animate-slide-up`}
+        style={{ animationDelay: `${index * 45}ms` }}
 
       >
         <button
@@ -210,41 +293,78 @@ export default function Home() {
   return (
     <div className="page-container flex flex-col gap-8 md:gap-12">
       {/* Hero Section */}
-      <header className="text-center space-y-4">
-        <div className="flex items-center justify-center gap-3 mb-6">
-          <div className="badge badge-primary">
-            <Sparkles className="h-3.5 w-3.5" />
-            <span>{t.home.badge}</span>
-          </div>
-          <button
-            onClick={toggleLanguage}
-            className="badge hover:bg-slate-700/50 transition-colors cursor-pointer"
-            title="Switch Language"
-          >
-            <Globe className="h-3.5 w-3.5" />
-            <span>{language === 'th' ? 'EN' : 'TH'}</span>
-          </button>
-        </div>
-        
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight pb-2 drop-shadow-[0_0_16px_rgba(139,92,246,0.25)]">
-          <span className="text-gradient">{t.home.title}</span>
-        </h1>
-        
-        <p className="text-base sm:text-lg md:text-xl text-slate-400 max-w-2xl mx-auto">
-          {t.home.subtitle}
-        </p>
+      <header className="relative overflow-hidden rounded-[32px] border border-slate-800/70 bg-slate-950/70 px-5 py-6 shadow-[0_30px_80px_rgba(2,6,23,0.48)] backdrop-blur-xl sm:px-8 sm:py-8">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(139,92,246,0.16),transparent_34%),radial-gradient(circle_at_bottom_right,rgba(34,211,238,0.12),transparent_34%)]" />
+        <div className="relative grid gap-8 lg:grid-cols-[minmax(0,1.25fr)_minmax(280px,0.75fr)] lg:items-end">
+          <div className="space-y-5">
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="badge badge-primary">
+                <Sparkles className="h-3.5 w-3.5" />
+                <span>{t.home.badge}</span>
+              </div>
+              <button
+                onClick={toggleLanguage}
+                className="badge hover:bg-slate-700/50 transition-colors cursor-pointer"
+                title="Switch Language"
+              >
+                <Globe className="h-3.5 w-3.5" />
+                <span>{language === 'th' ? 'EN' : 'TH'}</span>
+              </button>
+            </div>
 
-        {/* Search Bar */}
-        <div className="max-w-2xl mx-auto pt-4">
-          <div className="relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={t.common.search}
-              className="input-modern w-full pl-12 text-base"
-            />
+            <div className="space-y-3">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight pb-2 drop-shadow-[0_0_16px_rgba(139,92,246,0.25)]">
+                <span className="text-gradient">{t.home.title}</span>
+              </h1>
+
+              <p className="max-w-2xl text-base leading-7 text-slate-300 sm:text-lg md:text-xl">
+                {t.home.subtitle}
+              </p>
+            </div>
+
+            <div className="max-w-2xl pt-1">
+              <div className="relative">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder={t.common.search}
+                  className="input-modern w-full pl-12 text-base"
+                />
+              </div>
+            </div>
+
+            {!searchQuery && (
+              <div className="flex flex-wrap gap-3 pt-1">
+                {quickStartTools.map((tool) => {
+                  const title = language === 'th' ? tool.titleTh : tool.title
+
+                  return (
+                    <Link
+                      key={tool.id}
+                      href={tool.href}
+                      onClick={() => handleToolClick(tool.id, tool.href)}
+                      className="inline-flex items-center gap-2 rounded-2xl border border-slate-800/70 bg-slate-900/70 px-4 py-3 text-sm font-medium text-slate-200 transition-all hover:border-slate-700 hover:bg-slate-800/75 hover:text-white"
+                    >
+                      <tool.icon className="h-4 w-4 text-violet-300" />
+                      <span>{title}</span>
+                      <ArrowRight className="h-4 w-4 text-slate-500" />
+                    </Link>
+                  )
+                })}
+              </div>
+            )}
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
+            {heroStats.map((stat) => (
+              <div key={stat.label} className="rounded-2xl border border-slate-800/70 bg-slate-900/72 px-4 py-4">
+                <div className="text-[11px] uppercase tracking-[0.22em] text-slate-500">{stat.label}</div>
+                <div className="mt-2 text-2xl font-bold text-white">{stat.value}</div>
+                <p className="mt-2 text-sm leading-6 text-slate-400">{stat.detail}</p>
+              </div>
+            ))}
           </div>
         </div>
       </header>
@@ -280,25 +400,51 @@ export default function Home() {
       )}
       
       {/* All Tools Grid */}
-      <div className="space-y-4">
-        <h2 className="text-2xl font-bold text-white">
-          {searchQuery ? `${language === 'th' ? 'ผลการค้นหา' : 'Search Results'} (${filteredTools.length})` : t.common.allTools}
-        </h2>
-        {filteredTools.length === 0 ? (
-          <div className="section-card text-center py-12">
-            <Search className="w-12 h-12 text-slate-600 mx-auto mb-4" />
-            <p className="text-slate-400">
-              {language === 'th' ? 'ไม่พบเครื่องมือที่ตรงกับการค้นหา' : 'No tools found matching your search'}
-            </p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
-            {filteredTools.map((tool, index) => (
-              <ToolCard key={tool.id} tool={tool} index={index} />
-            ))}
-          </div>
-        )}
-      </div>
+      {searchQuery ? (
+        <div className="space-y-4">
+          <h2 className="text-2xl font-bold text-white">
+            {`${language === 'th' ? 'ผลการค้นหา' : 'Search Results'} (${filteredTools.length})`}
+          </h2>
+          {filteredTools.length === 0 ? (
+            <div className="section-card text-center py-12">
+              <Search className="w-12 h-12 text-slate-600 mx-auto mb-4" />
+              <p className="text-slate-400">
+                {language === 'th' ? 'ไม่พบเครื่องมือที่ตรงกับการค้นหา' : 'No tools found matching your search'}
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
+              {filteredTools.map((tool, index) => (
+                <ToolCard key={tool.id} tool={tool} index={index} />
+              ))}
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="space-y-10">
+          {groupedTools.map((group) => {
+            const title = language === 'th' ? group.titleTh : group.titleEn
+            const description = language === 'th' ? group.descriptionTh : group.descriptionEn
+
+            return (
+              <section key={group.key} className="space-y-4">
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+                  <div>
+                    <h2 className="text-2xl font-bold text-white">{title}</h2>
+                    <p className="text-sm text-slate-400">{description}</p>
+                  </div>
+                  <div className="badge">{group.tools.length} tools</div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
+                  {group.tools.map((tool, index) => (
+                    <ToolCard key={tool.id} tool={tool} index={index} />
+                  ))}
+                </div>
+              </section>
+            )
+          })}
+        </div>
+      )}
 
       {/* Bottom Info */}
       <div className="text-center">

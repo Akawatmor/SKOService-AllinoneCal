@@ -1,7 +1,7 @@
 "use client"
 
-import { useState } from "react"
-import { Plus, Trash2, TrendingDown, AlertCircle, Award } from "lucide-react"
+import { useState, useRef, useEffect } from "react"
+import { Plus, Trash2, Award, Minus, Equal } from "lucide-react"
 
 interface Item {
   id: number;
@@ -11,20 +11,70 @@ interface Item {
   name: string;
 }
 
+function Stepper({
+  value,
+  onChange,
+  min = 0.01,
+  step = 1,
+  placeholder = "1",
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  min?: number;
+  step?: number;
+  placeholder?: string;
+}) {
+  const dec = () => {
+    const n = parseFloat(value) - step
+    if (!isNaN(n) && n >= min) onChange(String(n))
+  }
+  const inc = () => {
+    const n = (parseFloat(value) || 0) + step
+    onChange(String(n))
+  }
+  return (
+    <div className="flex items-center rounded-xl overflow-hidden border border-slate-700/60 bg-slate-900/80">
+      <button
+        type="button"
+        onClick={dec}
+        className="px-4 py-3 text-slate-300 hover:bg-slate-700/50 active:bg-slate-700 transition-colors"
+      >
+        <Minus className="h-4 w-4" />
+      </button>
+      <input
+        type="number"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        className="flex-1 min-w-0 bg-transparent text-center text-slate-100 font-semibold focus:outline-none py-3 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+        min={min}
+        step={step}
+      />
+      <button
+        type="button"
+        onClick={inc}
+        className="px-4 py-3 text-slate-300 hover:bg-slate-700/50 active:bg-slate-700 transition-colors"
+      >
+        <Plus className="h-4 w-4" />
+      </button>
+    </div>
+  )
+}
+
 export default function ValueCalculator() {
   const [items, setItems] = useState<Item[]>([
-    { id: 1, price: '', quantity: '', unitsPerPack: '1', name: 'Option A' },
-    { id: 2, price: '', quantity: '', unitsPerPack: '1', name: 'Option B' }
+    { id: 1, price: '', quantity: '1', unitsPerPack: '1', name: 'Option A' },
+    { id: 2, price: '', quantity: '1', unitsPerPack: '1', name: 'Option B' }
   ])
+  const resultsRef = useRef<HTMLDivElement>(null)
+  const prevValidCount = useRef(0)
 
   const addItem = () => {
-    setItems([...items, { id: Date.now(), price: '', quantity: '', unitsPerPack: '1', name: `Option ${String.fromCharCode(65 + items.length)}` }])
+    setItems([...items, { id: Date.now(), price: '', quantity: '1', unitsPerPack: '1', name: `Option ${String.fromCharCode(65 + items.length)}` }])
   }
 
   const removeItem = (id: number) => {
-    if (items.length > 2) {
-      setItems(items.filter(i => i.id !== id))
-    }
+    if (items.length > 2) setItems(items.filter(i => i.id !== id))
   }
 
   const updateItem = (id: number, field: keyof Item, value: string) => {
@@ -36,15 +86,13 @@ export default function ValueCalculator() {
     const q = parseFloat(item.quantity)
     const u = parseFloat(item.unitsPerPack) || 1
     if (!p || !q || !u) return 0
-    const totalUnits = q * u
-    return p / totalUnits
+    return p / (q * u)
   }
 
   const getTotalUnits = (item: Item) => {
     const q = parseFloat(item.quantity)
     const u = parseFloat(item.unitsPerPack) || 1
-    if (!q || !u) return 0
-    return q * u
+    return (q && u) ? q * u : 0
   }
 
   const results = items.map(item => ({
@@ -54,215 +102,235 @@ export default function ValueCalculator() {
   }))
 
   const validItems = results.filter(i => i.unitPrice > 0)
-  const bestValue = validItems.length > 0 
-    ? validItems.reduce((prev, curr) => prev.unitPrice < curr.unitPrice ? prev : curr)
-    : null
+  const minPrice = validItems.length > 0 ? Math.min(...validItems.map(i => i.unitPrice)) : Infinity
+  const winners = validItems.filter(i => Math.abs(i.unitPrice - minPrice) < 1e-10)
+  const isTie = winners.length > 1 && winners.length === validItems.length
+  const hasResult = validItems.length >= 2
+
+  // Auto-scroll to results when they first appear
+  useEffect(() => {
+    if (hasResult && validItems.length > prevValidCount.current) {
+      setTimeout(() => {
+        resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }, 150)
+    }
+    prevValidCount.current = validItems.length
+  }, [hasResult, validItems.length])
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
-      
-      {/* Best Value Summary - แสดงผลชัดเจนก่อน */}
-      {bestValue && validItems.length > 1 && (
-        <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/30 dark:to-emerald-950/30 border-2 border-green-400 dark:border-green-700 rounded-2xl p-6 shadow-lg">
-          <div className="flex items-start gap-4">
-            <div className="bg-green-500 text-white p-3 rounded-full">
-              <Award className="h-8 w-8" />
-            </div>
-            <div className="flex-1">
-              <h3 className="text-xl font-bold text-green-900 dark:text-green-100 mb-2">
-                🏆 Best Value: {bestValue.name}
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3">
-                <div className="bg-white/60 dark:bg-black/20 rounded-lg p-3">
-                  <div className="text-xs text-green-700 dark:text-green-400 font-medium mb-1">Price per Unit</div>
-                  <div className="text-2xl font-bold text-green-900 dark:text-green-100 font-mono">
-                    ฿{bestValue.unitPrice.toFixed(2)}
-                  </div>
-                </div>
-                <div className="bg-white/60 dark:bg-black/20 rounded-lg p-3">
-                  <div className="text-xs text-green-700 dark:text-green-400 font-medium mb-1">Total Units</div>
-                  <div className="text-2xl font-bold text-green-900 dark:text-green-100">
-                    {bestValue.totalUnits.toLocaleString()}
-                  </div>
-                </div>
-                <div className="bg-white/60 dark:bg-black/20 rounded-lg p-3">
-                  <div className="text-xs text-green-700 dark:text-green-400 font-medium mb-1">Total Price</div>
-                  <div className="text-2xl font-bold text-green-900 dark:text-green-100">
-                    ฿{parseFloat(bestValue.price).toFixed(2)}
-                  </div>
-                </div>
-              </div>
-              <p className="text-sm text-green-800 dark:text-green-200">
-                This option gives you the lowest cost per unit compared to other options.
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
+    <div className="max-w-2xl mx-auto space-y-4">
 
-      {/* Comparison Table */}
-      {validItems.length > 1 && (
-        <div className="bg-card border rounded-xl overflow-hidden">
-          <div className="bg-muted/50 px-4 py-3 border-b">
-            <h3 className="font-semibold text-sm">Quick Comparison</h3>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="bg-muted/30 border-b">
-                <tr>
-                  <th className="text-left px-4 py-2 font-medium">Option</th>
-                  <th className="text-right px-4 py-2 font-medium">Price/Unit</th>
-                  <th className="text-right px-4 py-2 font-medium">Total Units</th>
-                  <th className="text-right px-4 py-2 font-medium">Total Price</th>
-                  <th className="text-right px-4 py-2 font-medium">vs Best</th>
-                </tr>
-              </thead>
-              <tbody>
-                {validItems
-                  .sort((a, b) => a.unitPrice - b.unitPrice)
-                  .map((item) => {
-                    const isBest = item.id === bestValue?.id
-                    const priceDiff = bestValue ? ((item.unitPrice - bestValue.unitPrice) / bestValue.unitPrice) * 100 : 0
-                    return (
-                      <tr key={item.id} className={`border-b last:border-0 ${isBest ? 'bg-green-50/50 dark:bg-green-950/20' : ''}`}>
-                        <td className="px-4 py-3">
-                          <div className="flex items-center gap-2">
-                            {isBest && <Award className="h-4 w-4 text-green-600" />}
-                            <span className={isBest ? 'font-semibold' : ''}>{item.name}</span>
-                          </div>
-                        </td>
-                        <td className={`text-right px-4 py-3 font-mono ${isBest ? 'font-bold text-green-600' : ''}`}>
-                          ฿{item.unitPrice.toFixed(4)}
-                        </td>
-                        <td className="text-right px-4 py-3">
-                          {item.totalUnits.toLocaleString()}
-                        </td>
-                        <td className="text-right px-4 py-3 font-mono">
-                          ฿{parseFloat(item.price).toFixed(2)}
-                        </td>
-                        <td className="text-right px-4 py-3">
-                          {isBest ? (
-                            <span className="text-green-600 font-semibold">BEST</span>
-                          ) : (
-                            <span className="text-red-600">+{priceDiff.toFixed(1)}%</span>
-                          )}
-                        </td>
-                      </tr>
-                    )
-                  })}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-
-      {/* Input Section - รายละเอียด */}
+      {/* Input Section */}
       <div className="space-y-3">
-        <h3 className="font-semibold text-sm text-muted-foreground">Enter Options</h3>
-        
-        <div className="space-y-3">
-          {items.map((item) => {
-            const isBest = bestValue && bestValue.id === item.id && validItems.length > 1
-            
-            return (
-              <div 
-                key={item.id} 
-                className={`relative bg-card border rounded-xl p-4 transition-all ${isBest ? 'border-green-500/50' : 'hover:border-primary/30'}`}
-              >
-                {isBest && (
-                  <div className="absolute -top-2 -right-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-sm flex items-center gap-1">
-                    <TrendingDown className="h-3 w-3" /> BEST
-                  </div>
-                )}
+        {items.map((item, idx) => {
+          const isWinner = winners.some(w => w.id === item.id) && hasResult
+          const unitPrice = calculateUnit(item)
 
-                <div className="space-y-3">
-                  {/* Name */}
-                  <div>
-                    <label className="text-xs font-medium text-muted-foreground block mb-1">Product Name</label>
-                    <input
-                      type="text"
-                      value={item.name}
-                      onChange={(e) => updateItem(item.id, 'name', e.target.value)}
-                      className="w-full bg-background border px-3 py-2 rounded-md text-sm font-medium"
-                      placeholder="e.g., Water Pack 12x"
-                    />
-                  </div>
-
-                  {/* Price, Quantity, Units per Pack */}
-                  <div className="grid grid-cols-12 gap-3">
-                    <div className="col-span-4">
-                      <label className="text-xs font-medium text-muted-foreground block mb-1">Total Price (฿)</label>
-                      <input
-                        type="number"
-                        value={item.price}
-                        onChange={(e) => updateItem(item.id, 'price', e.target.value)}
-                        className="w-full bg-background border px-3 py-2 rounded-md text-sm font-semibold"
-                        placeholder="0.00"
-                        step="0.01"
-                      />
-                    </div>
-                    <div className="col-span-4">
-                      <label className="text-xs font-medium text-muted-foreground block mb-1">Quantity (Packs)</label>
-                      <input
-                        type="number"
-                        value={item.quantity}
-                        onChange={(e) => updateItem(item.id, 'quantity', e.target.value)}
-                        className="w-full bg-background border px-3 py-2 rounded-md text-sm"
-                        placeholder="1"
-                        step="0.01"
-                      />
-                    </div>
-                    <div className="col-span-4">
-                      <label className="text-xs font-medium text-muted-foreground block mb-1">Units/Pack</label>
-                      <input
-                        type="number"
-                        value={item.unitsPerPack}
-                        onChange={(e) => updateItem(item.id, 'unitsPerPack', e.target.value)}
-                        className="w-full bg-background border px-3 py-2 rounded-md text-sm"
-                        placeholder="1"
-                        step="1"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Calculation Summary */}
-                  {item.price && item.quantity && (
-                    <div className="bg-muted/30 rounded-lg p-3 space-y-1.5 text-xs">
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Total Units:</span>
-                        <span className="font-medium">{getTotalUnits(item).toLocaleString()} units</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Price per Unit:</span>
-                        <span className={`font-mono font-semibold ${isBest ? 'text-green-600' : ''}`}>
-                          {calculateUnit(item) > 0 ? `฿${calculateUnit(item).toFixed(4)}` : '-'}
-                        </span>
-                      </div>
-                    </div>
-                  )}
+          return (
+            <div
+              key={item.id}
+              className={`section-card transition-all duration-300 ${
+                isWinner && !isTie
+                  ? 'ring-2 ring-emerald-500/60 border-emerald-500/30'
+                  : isWinner && isTie
+                    ? 'ring-2 ring-amber-500/60 border-amber-500/30'
+                    : ''
+              }`}
+            >
+              {/* Header row */}
+              <div className="flex items-center gap-2 mb-4">
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold shrink-0 ${
+                  isWinner && !isTie ? 'bg-emerald-500 text-white' : 'bg-slate-700 text-slate-300'
+                }`}>
+                  {isWinner && !isTie ? <Award className="h-4 w-4" /> : String.fromCharCode(65 + idx)}
                 </div>
-
-                {/* Delete Button */}
-                <button 
+                <input
+                  type="text"
+                  value={item.name}
+                  onChange={(e) => updateItem(item.id, 'name', e.target.value)}
+                  className="flex-1 bg-transparent border-b border-slate-700/60 focus:border-violet-500/50 text-slate-100 font-semibold text-base py-1 focus:outline-none"
+                  placeholder="Product name..."
+                />
+                {isWinner && !isTie && (
+                  <span className="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full">BEST</span>
+                )}
+                {isWinner && isTie && (
+                  <span className="text-xs font-bold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded-full">TIE</span>
+                )}
+                <button
                   onClick={() => removeItem(item.id)}
-                  className="absolute top-4 right-4 p-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-md transition-colors disabled:opacity-30"
                   disabled={items.length <= 2}
+                  className="p-1.5 text-slate-500 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-colors disabled:opacity-20"
                 >
                   <Trash2 className="h-4 w-4" />
                 </button>
               </div>
-            )
-          })}
-        </div>
+
+              {/* Price field */}
+              <div className="mb-4">
+                <label className="text-xs font-medium text-slate-500 block mb-1.5">Total Price (฿)</label>
+                <input
+                  type="number"
+                  value={item.price}
+                  onChange={(e) => updateItem(item.id, 'price', e.target.value)}
+                  className="input-modern text-lg font-semibold"
+                  placeholder="0.00"
+                  step="0.01"
+                />
+              </div>
+
+              {/* Quantity + Units with steppers */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-xs font-medium text-slate-500 block mb-1.5">Quantity (Packs)</label>
+                  <Stepper
+                    value={item.quantity}
+                    onChange={(v) => updateItem(item.id, 'quantity', v)}
+                    min={0.01}
+                    step={1}
+                    placeholder="1"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-slate-500 block mb-1.5">Units / Pack</label>
+                  <Stepper
+                    value={item.unitsPerPack}
+                    onChange={(v) => updateItem(item.id, 'unitsPerPack', v)}
+                    min={1}
+                    step={1}
+                    placeholder="1"
+                  />
+                </div>
+              </div>
+
+              {/* Inline summary when filled */}
+              {unitPrice > 0 && (
+                <div className="mt-3 flex gap-3 pt-3 border-t border-slate-700/40">
+                  <div className="flex-1 text-center">
+                    <div className="text-xs text-slate-500 mb-0.5">Total units</div>
+                    <div className="font-semibold text-slate-200">{getTotalUnits(item).toLocaleString()}</div>
+                  </div>
+                  <div className="w-px bg-slate-700/40" />
+                  <div className="flex-1 text-center">
+                    <div className="text-xs text-slate-500 mb-0.5">Price / unit</div>
+                    <div className={`font-mono font-bold ${isWinner && !isTie ? 'text-emerald-400' : 'text-slate-200'}`}>
+                      ฿{unitPrice.toFixed(4)}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )
+        })}
       </div>
 
+      {/* Add option button */}
       <button
         onClick={addItem}
-        className="w-full py-3 border-2 border-dashed border-muted-foreground/25 rounded-xl text-muted-foreground font-medium hover:border-primary/50 hover:text-primary hover:bg-primary/5 transition-all flex items-center justify-center gap-2"
+        className="w-full py-3.5 border-2 border-dashed border-slate-700/50 rounded-2xl text-slate-500 font-medium hover:border-violet-500/50 hover:text-violet-400 hover:bg-violet-500/5 transition-all flex items-center justify-center gap-2"
       >
         <Plus className="h-4 w-4" /> Add Another Option
       </button>
 
+      {/* Results section — auto-scroll target, shown BELOW inputs */}
+      <div ref={resultsRef}>
+        {hasResult && (
+          <div className="space-y-4 pt-2">
+            {/* Winner / Tie banner */}
+            {isTie ? (
+              <div className="section-card border-amber-500/30 bg-amber-500/5">
+                <div className="flex items-center gap-3">
+                  <div className="bg-amber-500 p-2.5 rounded-full">
+                    <Equal className="h-6 w-6 text-white" />
+                  </div>
+                  <div>
+                    <div className="font-bold text-amber-300 text-lg">It&apos;s a Tie!</div>
+                    <div className="text-sm text-slate-400">All options have the same price per unit — choose by preference.</div>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="section-card border-emerald-500/30 bg-emerald-500/5">
+                <div className="flex items-start gap-3">
+                  <div className="bg-emerald-500 p-2.5 rounded-full shrink-0">
+                    <Award className="h-6 w-6 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="font-bold text-emerald-300 text-lg mb-3">
+                      🏆 Best Value: {winners[0].name}
+                    </div>
+                    <div className="grid grid-cols-3 gap-3">
+                      <div className="bg-black/20 rounded-xl p-3 text-center">
+                        <div className="text-xs text-emerald-500 mb-1">Price / Unit</div>
+                        <div className="font-mono font-bold text-emerald-300 text-xl">฿{winners[0].unitPrice.toFixed(4)}</div>
+                      </div>
+                      <div className="bg-black/20 rounded-xl p-3 text-center">
+                        <div className="text-xs text-slate-500 mb-1">Total Units</div>
+                        <div className="font-bold text-slate-200 text-xl">{winners[0].totalUnits.toLocaleString()}</div>
+                      </div>
+                      <div className="bg-black/20 rounded-xl p-3 text-center">
+                        <div className="text-xs text-slate-500 mb-1">Total Price</div>
+                        <div className="font-mono font-bold text-slate-200 text-xl">฿{parseFloat(winners[0].price).toFixed(2)}</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Comparison table */}
+            <div className="section-card overflow-hidden p-0">
+              <div className="px-4 py-3 border-b border-slate-700/60">
+                <h3 className="font-semibold text-slate-200 text-sm">Comparison</h3>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-slate-700/40">
+                      <th className="text-left px-4 py-2.5 text-xs font-medium text-slate-500">Option</th>
+                      <th className="text-right px-4 py-2.5 text-xs font-medium text-slate-500">฿/Unit</th>
+                      <th className="text-right px-4 py-2.5 text-xs font-medium text-slate-500">Units</th>
+                      <th className="text-right px-4 py-2.5 text-xs font-medium text-slate-500">vs Best</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[...validItems]
+                      .sort((a, b) => a.unitPrice - b.unitPrice)
+                      .map((item) => {
+                        const isW = winners.some(w => w.id === item.id)
+                        const pct = isTie ? 0 : ((item.unitPrice - minPrice) / minPrice) * 100
+                        return (
+                          <tr key={item.id} className={`border-b border-slate-700/30 last:border-0 ${isW && !isTie ? 'bg-emerald-500/5' : ''}`}>
+                            <td className="px-4 py-3">
+                              <div className="flex items-center gap-1.5">
+                                {isW && !isTie && <Award className="h-3.5 w-3.5 text-emerald-400" />}
+                                {isW && isTie && <Equal className="h-3.5 w-3.5 text-amber-400" />}
+                                <span className={isW ? 'font-semibold text-slate-200' : 'text-slate-400'}>{item.name}</span>
+                              </div>
+                            </td>
+                            <td className={`text-right px-4 py-3 font-mono font-semibold ${isW && !isTie ? 'text-emerald-400' : 'text-slate-300'}`}>
+                              ฿{item.unitPrice.toFixed(4)}
+                            </td>
+                            <td className="text-right px-4 py-3 text-slate-400">{item.totalUnits.toLocaleString()}</td>
+                            <td className="text-right px-4 py-3">
+                              {isW && !isTie ? (
+                                <span className="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full">BEST</span>
+                              ) : isTie ? (
+                                <span className="text-xs font-bold text-amber-400">EQUAL</span>
+                              ) : (
+                                <span className="text-xs text-red-400 font-medium">+{pct.toFixed(1)}%</span>
+                              )}
+                            </td>
+                          </tr>
+                        )
+                      })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   )
 }

@@ -1,9 +1,8 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { ArrowLeftRight, Search, ArrowLeft } from "lucide-react"
+import { ArrowLeftRight, Search } from "lucide-react"
 import { UnitCategory, unitCategories, units, convert } from "@/lib/units"
-import Link from "next/link"
 
 export default function UnitConverter() {
   const [category, setCategory] = useState<UnitCategory>('length')
@@ -54,24 +53,20 @@ export default function UnitConverter() {
   }
 
   return (
-    <div className="min-h-screen relative">
-      <div className="relative z-10 max-w-4xl mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="flex items-center gap-4 mb-8">
-          <Link 
-            href="/" 
-            className="p-2 rounded-xl bg-slate-800/50 hover:bg-slate-700/50 transition-colors"
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </Link>
-          <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-white">Unit Converter</h1>
-            <p className="text-sm text-slate-400">แปลงหน่วย 15+ หมวดหมู่</p>
-          </div>
+    <div className="relative z-10 space-y-6">
+      <div className="section-card border-violet-500/20 bg-gradient-to-br from-violet-500/10 via-slate-900/70 to-cyan-500/10">
+        <div className="flex flex-wrap items-center gap-3">
+          <span className="badge badge-primary">15+ categories</span>
+          <span className="badge">Thai + SI units</span>
+          <span className="badge">Quick search</span>
         </div>
+        <p className="mt-4 max-w-2xl text-sm leading-6 text-slate-300">
+          เลือกหมวดหมู่ ใส่ค่า และค้นหาหน่วยต้นทางหรือปลายทางได้ทันที หน้านี้เหมาะกับการแปลงทั้งหน่วยทั่วไป หน่วยวิศวกรรม และหน่วยไทยในหน้าเดียว
+        </p>
+      </div>
 
         {/* Category Selection */}
-        <div className="mb-6">
+        <div>
           <label className="block text-sm font-medium text-slate-400 mb-2">
             หมวดหมู่
           </label>
@@ -175,12 +170,11 @@ export default function UnitConverter() {
         </div>
 
         {/* Info */}
-        <div className="mt-6 text-center">
+        <div className="text-center">
           <p className="text-xs text-slate-400">
             💡 ใช้ช่องค้นหาเพื่อหาหน่วยที่ต้องการได้เร็วขึ้น
           </p>
         </div>
-      </div>
     </div>
   )
 }
