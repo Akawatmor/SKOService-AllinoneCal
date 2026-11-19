@@ -19,3 +19,4 @@ pnpm-debug.log*
 *.tsbuildinfo
 .cache/
 *.turbo/
+*.dependency-cache

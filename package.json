@@ -9,10 +9,12 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@cortex-js/compute-engine": "0.173.0",
     "@tailwindcss/postcss": "^4.1.18",
     "clsx": "latest",
     "katex": "^0.16.45",
     "lucide-react": "latest",
+    "mathlive": "^0.111.4",
     "next": "latest",
     "plotly.js": "^3.5.0",
     "react": "latest",
